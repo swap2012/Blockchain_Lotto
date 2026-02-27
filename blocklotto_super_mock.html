@@ -1,0 +1,2062 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlockLotto - Super Mock Full Features</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5a67d8;
+            --secondary: #764ba2;
+            --success: #48bb78;
+            --warning: #ed8936;
+            --danger: #f56565;
+            --dark: #2d3748;
+            --gray: #718096;
+            --light-gray: #edf2f7;
+            --white: #ffffff;
+            --legendary: #ff6600;
+            --epic: #9f7aea;
+            --rare: #4299e1;
+            --common: #718096;
+        }
+        
+        [data-theme="dark"] {
+            --bg-primary: #0f0f23;
+            --bg-secondary: #1a1a2e;
+            --bg-tertiary: #16213e;
+            --text-primary: #edf2f7;
+            --text-secondary: #a0aec0;
+            --border-color: #2d3748;
+        }
+        
+        [data-theme="light"] {
+            --bg-primary: #f7fafc;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #edf2f7;
+            --text-primary: #2d3748;
+            --text-secondary: #718096;
+            --border-color: #e2e8f0;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background 0.3s, color 0.3s;
+        }
+        
+        /* Navbar */
+        .navbar {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .nav-center {
+            display: flex;
+            gap: 24px;
+        }
+        
+        .nav-link {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .nav-right {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+        
+        .theme-toggle {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.3s;
+        }
+        
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+        
+        .notifications-btn {
+            position: relative;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 20px;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .wallet-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .wallet-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .wallet-btn.connected {
+            background: var(--success);
+        }
+        
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 20px;
+            padding: 40px;
+            color: white;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+        }
+        
+        .hero-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+        
+        .jackpot-amount {
+            font-size: 64px;
+            font-weight: 900;
+            margin: 10px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .countdown {
+            background: rgba(255,255,255,0.2);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .countdown-timer {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        
+        .time-unit {
+            background: rgba(255,255,255,0.3);
+            padding: 10px;
+            border-radius: 8px;
+            min-width: 60px;
+        }
+        
+        .time-value {
+            font-size: 28px;
+            font-weight: 900;
+        }
+        
+        .time-label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        
+        .tab {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            padding: 12px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            white-space: nowrap;
+            color: var(--text-primary);
+        }
+        
+        .tab.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Number Grid */
+        .number-selection {
+            background: var(--bg-secondary);
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+        }
+        
+        .numbers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .number {
+            aspect-ratio: 1;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+        
+        .number:hover {
+            transform: scale(1.1);
+            border-color: var(--primary);
+        }
+        
+        .number.selected {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .number.hot {
+            background: linear-gradient(135deg, #f56565, #ed8936);
+            color: white;
+        }
+        
+        .number.cold {
+            background: linear-gradient(135deg, #4299e1, #3182ce);
+            color: white;
+        }
+        
+        /* Selected Numbers Display */
+        .selected-numbers {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .selected-number {
+            background: var(--primary);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 24px;
+        }
+        
+        /* Buttons */
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 16px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Cards */
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        
+        .card-title {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        /* Stats */
+        .stat-box {
+            background: var(--bg-tertiary);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 900;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+        
+        /* Prize Calculator */
+        .calculator-slider {
+            width: 100%;
+            margin: 20px 0;
+        }
+        
+        .prize-breakdown {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .prize-tier {
+            background: var(--bg-tertiary);
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        /* Pools */
+        .pool-card {
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+        
+        .pool-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+        
+        .pool-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .pool-name {
+            font-size: 18px;
+            font-weight: 700;
+        }
+        
+        .pool-spots {
+            background: var(--primary);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+        
+        .pool-progress {
+            background: var(--bg-secondary);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .pool-progress-bar {
+            background: linear-gradient(90deg, var(--success), var(--primary));
+            height: 100%;
+            transition: width 0.3s;
+        }
+        
+        /* NFT Gallery */
+        .nft-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .nft-card {
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .nft-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .nft-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            position: relative;
+        }
+        
+        .nft-rarity {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .nft-rarity.legendary { background: var(--legendary); }
+        .nft-rarity.epic { background: var(--epic); }
+        .nft-rarity.rare { background: var(--rare); }
+        .nft-rarity.common { background: var(--common); }
+        
+        .nft-info {
+            padding: 15px;
+        }
+        
+        .nft-numbers {
+            display: flex;
+            gap: 5px;
+            margin: 10px 0;
+            flex-wrap: wrap;
+        }
+        
+        .nft-number {
+            background: var(--primary);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        
+        /* Leaderboard */
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .rank {
+            font-size: 24px;
+            font-weight: 900;
+            min-width: 40px;
+        }
+        
+        .rank.gold { color: #FFD700; }
+        .rank.silver { color: #C0C0C0; }
+        .rank.bronze { color: #CD7F32; }
+        
+        .player-info {
+            flex: 1;
+        }
+        
+        .player-name {
+            font-weight: 700;
+        }
+        
+        .player-stats {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        /* Achievements */
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .achievement {
+            background: var(--bg-tertiary);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .achievement.unlocked {
+            border: 2px solid var(--success);
+        }
+        
+        .achievement.locked {
+            opacity: 0.5;
+            filter: grayscale(1);
+        }
+        
+        .achievement-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        
+        .achievement-name {
+            font-weight: 700;
+            font-size: 14px;
+        }
+        
+        /* Marketplace */
+        .filter-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-select {
+            padding: 10px 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: var(--bg-secondary);
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 30px;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+        
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--bg-secondary);
+            border: 2px solid var(--success);
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            display: none;
+            z-index: 3000;
+            min-width: 300px;
+        }
+        
+        .toast.show {
+            display: block;
+            animation: slideIn 0.3s;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(400px); }
+            to { transform: translateX(0); }
+        }
+        
+        /* Notifications Dropdown */
+        .notifications-dropdown {
+            position: absolute;
+            top: 60px;
+            right: 150px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            width: 350px;
+            max-height: 400px;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: none;
+            z-index: 1500;
+        }
+        
+        .notifications-dropdown.active {
+            display: block;
+        }
+        
+        .notification-item {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .notification-item:hover {
+            background: var(--bg-tertiary);
+        }
+        
+        .notification-item.unread {
+            background: rgba(102, 126, 234, 0.1);
+        }
+        
+        /* Charts */
+        .chart-container {
+            background: var(--bg-tertiary);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+        
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+            height: 200px;
+        }
+        
+        .bar {
+            flex: 1;
+            background: linear-gradient(to top, var(--primary), var(--secondary));
+            border-radius: 8px 8px 0 0;
+            position: relative;
+            transition: all 0.3s;
+        }
+        
+        .bar:hover {
+            opacity: 0.8;
+        }
+        
+        .bar-label {
+            position: absolute;
+            bottom: -25px;
+            width: 100%;
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .jackpot-amount {
+                font-size: 40px;
+            }
+            
+            .numbers-grid {
+                grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+            }
+            
+            .navbar {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav-center {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+        
+        /* Loading Spinner */
+        .spinner {
+            border: 3px solid var(--border-color);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body data-theme="light">
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">
+            <span class="logo-icon">🎰</span>
+            <span>BlockLotto</span>
+        </div>
+        
+        <div class="nav-center">
+            <a class="nav-link active" data-tab="play">🎮 Jugar</a>
+            <a class="nav-link" data-tab="my-tickets">🎫 Mis Tickets</a>
+            <a class="nav-link" data-tab="pools">🏊 Pools</a>
+            <a class="nav-link" data-tab="stats">📊 Stats</a>
+            <a class="nav-link" data-tab="marketplace">🛒 Market</a>
+            <a class="nav-link" data-tab="more">⚡ Más</a>
+        </div>
+        
+        <div class="nav-right">
+            <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+            <button class="notifications-btn" onclick="toggleNotifications()">
+                🔔
+                <span class="notification-badge">5</span>
+            </button>
+            <button class="wallet-btn" onclick="connectWallet()">
+                <span>💳</span>
+                <span id="wallet-text">Connect Wallet</span>
+            </button>
+        </div>
+    </nav>
+    
+    <!-- Notifications Dropdown -->
+    <div class="notifications-dropdown" id="notificationsDropdown">
+        <div class="notification-item unread">
+            <div style="font-weight: 700;">🎉 ¡Ganaste!</div>
+            <div style="font-size: 14px; color: var(--text-secondary);">3 aciertos - $245 MATIC</div>
+            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 5px;">Hace 2 horas</div>
+        </div>
+        <div class="notification-item unread">
+            <div style="font-weight: 700;">💎 NFT Legendario!</div>
+            <div style="font-size: 14px; color: var(--text-secondary);">Obtuviste un ticket legendario</div>
+            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 5px;">Hace 5 horas</div>
+        </div>
+        <div class="notification-item">
+            <div style="font-weight: 700;">🔔 Sorteo en 1 hora</div>
+            <div style="font-size: 14px; color: var(--text-secondary);">Draw #1249 comenzará pronto</div>
+            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 5px;">Hace 8 horas</div>
+        </div>
+        <div class="notification-item">
+            <div style="font-weight: 700;">🎁 Referido compró ticket</div>
+            <div style="font-size: 14px; color: var(--text-secondary);">Ganaste $0.20 en comisión</div>
+            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 5px;">Hace 1 día</div>
+        </div>
+        <div class="notification-item">
+            <div style="font-weight: 700;">🏆 Logro desbloqueado</div>
+            <div style="font-size: 14px; color: var(--text-secondary);">Lucky 7 - Compraste 7 tickets</div>
+            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 5px;">Hace 2 días</div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <!-- Hero Section -->
+        <div class="hero">
+            <div class="hero-content">
+                <div>
+                    <div style="font-size: 20px; opacity: 0.9;">Current Jackpot</div>
+                    <div class="jackpot-amount">$2,450,000</div>
+                    <div style="font-size: 18px; opacity: 0.8; margin-top: 10px;">
+                        Draw #1248 • 12,450 tickets sold
+                    </div>
+                </div>
+                <div class="countdown">
+                    <div style="font-size: 18px; font-weight: 700;">Next Draw In:</div>
+                    <div class="countdown-timer">
+                        <div class="time-unit">
+                            <div class="time-value" id="hours">23</div>
+                            <div class="time-label">HORAS</div>
+                        </div>
+                        <div class="time-unit">
+                            <div class="time-value" id="minutes">45</div>
+                            <div class="time-label">MIN</div>
+                        </div>
+                        <div class="time-unit">
+                            <div class="time-value" id="seconds">12</div>
+                            <div class="time-label">SEG</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="tab active" data-tab="play">🎮 Jugar</div>
+            <div class="tab" data-tab="my-tickets">🎫 Mis Tickets</div>
+            <div class="tab" data-tab="pools">🏊 Sindicatos</div>
+            <div class="tab" data-tab="stats">📊 Estadísticas</div>
+            <div class="tab" data-tab="marketplace">🛒 Marketplace</div>
+            <div class="tab" data-tab="history">📜 Historial</div>
+            <div class="tab" data-tab="calculator">💰 Calculadora</div>
+            <div class="tab" data-tab="analyzer">🔍 Analizador</div>
+            <div class="tab" data-tab="leaderboard">🏆 Ranking</div>
+            <div class="tab" data-tab="achievements">🎖️ Logros</div>
+            <div class="tab" data-tab="referrals">👥 Referidos</div>
+            <div class="tab" data-tab="loyalty">⭐ Loyalty</div>
+        </div>
+        
+        <!-- TAB: Jugar -->
+        <div class="tab-content active" id="play">
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-title">🎯 Selecciona tus números</div>
+                    
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="quickPick()">🎲 Quick Pick</button>
+                        <button class="btn btn-secondary" onclick="clearSelection()">🗑️ Limpiar</button>
+                        <button class="btn btn-secondary" onclick="loadFavorite()">⭐ Favoritos</button>
+                        <button class="btn btn-secondary" onclick="toggleHotCold()">🔥 Hot/Cold</button>
+                    </div>
+                    
+                    <div class="selected-numbers" id="selectedNumbers">
+                        <div style="color: var(--text-secondary);">Selecciona 6 números...</div>
+                    </div>
+                    
+                    <div class="numbers-grid" id="numbersGrid">
+                        <!-- Numbers will be generated by JS -->
+                    </div>
+                    
+                    <div class="button-group">
+                        <button class="btn btn-success" id="buyBtn" disabled onclick="buyTicket()">
+                            💳 Comprar Ticket ($2.00)
+                        </button>
+                        <button class="btn btn-primary" onclick="openMultiDraw()">
+                            📅 Multi-Draw
+                        </button>
+                        <button class="btn btn-secondary" onclick="saveFavorite()">
+                            💾 Guardar Favorito
+                        </button>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="card">
+                        <div class="card-title">📈 Stats en Vivo</div>
+                        <div class="grid-2">
+                            <div class="stat-box">
+                                <div class="stat-value">12,450</div>
+                                <div class="stat-label">Tickets Vendidos</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value">$2.45M</div>
+                                <div class="stat-label">Jackpot</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value">4,892</div>
+                                <div class="stat-label">Jugadores Activos</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value">347</div>
+                                <div class="stat-label">Ganadores Totales</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-title">🔥 Números Calientes</div>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <div class="nft-number" style="background: #f56565;">7</div>
+                            <div class="nft-number" style="background: #f56565;">14</div>
+                            <div class="nft-number" style="background: #f56565;">23</div>
+                            <div class="nft-number" style="background: #f56565;">31</div>
+                            <div class="nft-number" style="background: #f56565;">42</div>
+                        </div>
+                        <div style="margin-top: 15px; font-size: 14px; color: var(--text-secondary);">
+                            Más sorteados en los últimos 30 días
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- TAB: Mis Tickets -->
+        <div class="tab-content" id="my-tickets">
+            <div class="card">
+                <div class="card-title">🎫 Mi Colección de NFTs</div>
+                
+                <div class="filter-bar">
+                    <select class="filter-select">
+                        <option>Todas las rarezas</option>
+                        <option>Legendary (1)</option>
+                        <option>Epic (3)</option>
+                        <option>Rare (12)</option>
+                        <option>Common (31)</option>
+                    </select>
+                    <select class="filter-select">
+                        <option>Todos los estados</option>
+                        <option>Pending</option>
+                        <option>Winner</option>
+                        <option>No Winner</option>
+                    </select>
+                    <select class="filter-select">
+                        <option>Todos los sorteos</option>
+                        <option>Draw #1248</option>
+                        <option>Draw #1247</option>
+                        <option>Draw #1246</option>
+                    </select>
+                </div>
+                
+                <div class="stat-box" style="margin: 20px 0;">
+                    <div style="display: flex; justify-content: space-around; text-align: center;">
+                        <div>
+                            <div class="stat-value">47</div>
+                            <div class="stat-label">Total NFTs</div>
+                        </div>
+                        <div>
+                            <div class="stat-value">$124.50</div>
+                            <div class="stat-label">Valor Estimado</div>
+                        </div>
+                        <div>
+                            <div class="stat-value">2.1%</div>
+                            <div class="stat-label">Legendarios</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="nft-grid">
+                    <div class="nft-card">
+                        <div class="nft-image" style="background: linear-gradient(135deg, #ff6600, #ff8800);">
+                            🐉
+                            <div class="nft-rarity legendary">LEGENDARY</div>
+                        </div>
+                        <div class="nft-info">
+                            <div style="font-weight: 700;">Ticket #1248-0042</div>
+                            <div class="nft-numbers">
+                                <span class="nft-number">07</span>
+                                <span class="nft-number">14</span>
+                                <span class="nft-number">23</span>
+                                <span class="nft-number">31</span>
+                                <span class="nft-number">42</span>
+                                <span class="nft-number">55</span>
+                            </div>
+                            <div style="font-size: 14px; color: var(--text-secondary);">
+                                Status: Pending • Value: $150
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="nft-card">
+                        <div class="nft-image" style="background: linear-gradient(135deg, #9f7aea, #b794f4);">
+                            🦄
+                            <div class="nft-rarity epic">EPIC</div>
+                        </div>
+                        <div class="nft-info">
+                            <div style="font-weight: 700;">Ticket #1248-0038</div>
+                            <div class="nft-numbers">
+                                <span class="nft-number">03</span>
+                                <span class="nft-number">12</span>
+                                <span class="nft-number">25</span>
+                                <span class="nft-number">31</span>
+                                <span class="nft-number">44</span>
+                                <span class="nft-number">56</span>
+                            </div>
+                            <div style="font-size: 14px; color: var(--text-secondary);">
+                                Status: Pending • Value: $35
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="nft-card">
+                        <div class="nft-image" style="background: linear-gradient(135deg, #4299e1, #63b3ed);">
+                            💎
+                            <div class="nft-rarity rare">RARE</div>
+                        </div>
+                        <div class="nft-info">
+                            <div style="font-weight: 700;">Ticket #1247-0156</div>
+                            <div class="nft-numbers">
+                                <span class="nft-number">05</span>
+                                <span class="nft-number">18</span>
+                                <span class="nft-number">27</span>
+                                <span class="nft-number">33</span>
+                                <span class="nft-number">41</span>
+                                <span class="nft-number">49</span>
+                            </div>
+                            <div style="font-size: 14px; color: #48bb78; font-weight: 700;">
+                                ✓ WINNER - 3 matches - $245
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="nft-card">
+                        <div class="nft-image" style="background: linear-gradient(135deg, #718096, #a0aec0);">
+                            🍀
+                            <div class="nft-rarity common">COMMON</div>
+                        </div>
+                        <div class="nft-info">
+                            <div style="font-weight: 700;">Ticket #1247-0089</div>
+                            <div class="nft-numbers">
+                                <span class="nft-number">02</span>
+                                <span class="nft-number">11</span>
+                                <span class="nft-number">19</span>
+                                <span class="nft-number">28</span>
+                                <span class="nft-number">36</span>
+                                <span class="nft-number">45</span>
+                            </div>
+                            <div style="font-size: 14px; color: var(--text-secondary);">
+                                Status: No Winner • Value: $1.20
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- TAB: Pools -->
+        <div class="tab-content" id="pools">
+            <div class="card">
+                <div class="card-title">🏊 Sindicatos Activos</div>
+                
+                <button class="btn btn-primary" style="margin-bottom: 20px;" onclick="createPool()">
+                    ➕ Crear Sindicato
+                </button>
+                
+                <div class="grid-3">
+                    <div class="pool-card">
+                        <div class="pool-header">
+                            <div class="pool-name">🌟 Lucky Stars</div>
+                            <div class="pool-spots">7/10 spots</div>
+                        </div>
+                        <div>Entry: $2.00 • Pot: $14.00</div>
+                        <div class="pool-progress">
+                            <div class="pool-progress-bar" style="width: 70%;"></div>
+                        </div>
+                        <div style="font-size: 14px; color: var(--text-secondary); margin-top: 10px;">
+                            10 tickets • Draw #1248
+                        </div>
+                        <button class="btn btn-success" style="width: 100%; margin-top: 10px;">
+                            Join Pool
+                        </button>
+                    </div>
+                    
+                    <div class="pool-card">
+                        <div class="pool-header">
+                            <div class="pool-name">💎 Diamond Club</div>
+                            <div class="pool-spots">15/20 spots</div>
+                        </div>
+                        <div>Entry: $2.00 • Pot: $30.00</div>
+                        <div class="pool-progress">
+                            <div class="pool-progress-bar" style="width: 75%;"></div>
+                        </div>
+                        <div style="font-size: 14px; color: var(--text-secondary); margin-top: 10px;">
+                            20 tickets • Draw #1248
+                        </div>
+                        <button class="btn btn-success" style="width: 100%; margin-top: 10px;">
+                            Join Pool
+                        </button>
+                    </div>
+                    
+                    <div class="pool-card" style="border-color: var(--success);">
+                        <div class="pool-header">
+                            <div class="pool-name">🎯 Your Pool</div>
+                            <div class="pool-spots">3/5 spots</div>
+                        </div>
+                        <div>Entry: $2.00 • Pot: $6.00</div>
+                        <div class="pool-progress">
+                            <div class="pool-progress-bar" style="width: 60%;"></div>
+                        </div>
+                        <div style="font-size: 14px; color: var(--text-secondary); margin-top: 10px;">
+                            5 tickets • Draw #1248
+                        </div>
+                        <button class="btn btn-secondary" style="width: 100%; margin-top: 10px;">
+                            Manage Pool
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- TAB: Estadísticas -->
+        <div class="tab-content" id="stats">
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-title">📊 Mis Estadísticas</div>
+                    <div class="grid-2">
+                        <div class="stat-box">
+                            <div class="stat-value">$94.00</div>
+                            <div class="stat-label">Total Gastado</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value">$245.00</div>
+                            <div class="stat-label">Total Ganado</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" style="color: var(--success);">+160%</div>
+                            <div class="stat-label">ROI</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value">47</div>
+                            <div class="stat-label">Tickets Comprados</div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 30px;">
+                        <div style="font-weight: 700; margin-bottom: 15px;">Win Rate</div>
+                        <div style="background: var(--bg-tertiary); height: 30px; border-radius: 15px; overflow: hidden;">
+                            <div style="background: var(--success); height: 100%; width: 8.5%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px;">
+                                8.5%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">🎯 Números Favoritos</div>
+                    <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 15px;">
+                        Tus números más comprados
+                    </div>
+                    <div class="bar-chart">
+                        <div class="bar" style="height: 80%;">
+                            <div class="bar-label">7 (12x)</div>
+                        </div>
+                        <div class="bar" style="height: 60%;">
+                            <div class="bar-label">14 (9x)</div>
+                        </div>
+                        <div class="bar" style="height: 70%;">
+                            <div class="bar-label">23 (10x)</div>
+                        </div>
+                        <div class="bar" style="height: 50%;">
+                            <div class="bar-label">31 (7x)</div>
+                        </div>
+                        <div class="bar" style="height: 90%;">
+                            <div class="bar-label">42 (14x)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">📈 Jackpot Tracker (Últimos 30 días)</div>
+                <div class="chart-container">
+                    <svg width="100%" height="200" style="background: var(--bg-secondary);">
+                        <polyline points="0,150 100,120 200,100 300,80 400,60 500,90 600,70 700,50 800,30" 
+                                  fill="none" stroke="url(#gradient)" stroke-width="3"/>
+                        <defs>
+                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+            </div>
+        </div>
+        
+        <!-- TAB: Marketplace -->
+        <div class="tab-content" id="marketplace">
+            <div class="card">
+                <div class="card-title">🛒 Marketplace de NFTs</div>
+                
+                <div class="filter-bar">
+                    <select class="filter-select">
+                        <option>Todas las rarezas</option>
+                        <option>Legendary</option>
+                        <option>Epic</option>
+                        <option>Rare</option>
+                        <option>Common</option>
+                    </select>
+                    <select class="filter-select">
+                        <option>Precio: Todos</option>
+                        <option>< $10</option>
+                        <option>$10 - $50</option>
+                        <option>$50 - $100</option>
+                        <option>> $100</option>
+                    </select>
+                    <select class="filter-select">
+                        <option>Ordenar: Más Reciente</option>
+                        <option>Precio: Menor a Mayor</option>
+                        <option>Precio: Mayor a Menor</option>
+                        <option>Rareza</option>
+                    </select>
+                </div>
+                
+                <div class="nft-grid">
+                    <div class="nft-card">
+                        <div class="nft-image" style="background: linear-gradient(135deg, #ff6600, #ff8800);">
+                            🐉
+                            <div class="nft-rarity legendary">LEGENDARY</div>
+                        </div>
+                        <div class="nft-info">
+                            <div style="font-weight: 700;">Ticket #1246-0023</div>
+                            <div class="nft-numbers">
+                                <span class="nft-number">04</span>
+                                <span class="nft-number">16</span>
+                                <span class="nft-number">24</span>
+                                <span class="nft-number">32</span>
+                                <span class="nft-number">40</span>
+                                <span class="nft-number">48</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                                <div style="font-size: 18px; font-weight: 900; color: var(--primary);">$180</div>
+                                <button class="btn btn-success" style="padding: 8px 16px; font-size: 14px;">Buy Now</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="nft-card">
+                        <div class="nft-image" style="background: linear-gradient(135deg, #9f7aea, #b794f4);">
+                            🔮
+                            <div class="nft-rarity epic">EPIC</div>
+                        </div>
+                        <div class="nft-info">
+                            <div style="font-weight: 700;">Ticket #1245-0089</div>
+                            <div class="nft-numbers">
+                                <span class="nft-number">01</span>
+                                <span class="nft-number">13</span>
+                                <span class="nft-number">21</span>
+                                <span class="nft-number">29</span>
+                                <span class="nft-number">37</span>
+                                <span class="nft-number">45</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                                <div style="font-size: 18px; font-weight: 900; color: var(--primary);">$42</div>
+                                <button class="btn btn-success" style="padding: 8px 16px; font-size: 14px;">Buy Now</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="nft-card">
+                        <div class="nft-image" style="background: linear-gradient(135deg, #4299e1, #63b3ed);">
+                            💎
+                            <div class="nft-rarity rare">RARE</div>
+                        </div>
+                        <div class="nft-info">
+                            <div style="font-weight: 700;">Ticket #1247-0234</div>
+                            <div class="nft-numbers">
+                                <span class="nft-number">08</span>
+                                <span class="nft-number">15</span>
+                                <span class="nft-number">22</span>
+                                <span class="nft-number">29</span>
+                                <span class="nft-number">36</span>
+                                <span class="nft-number">43</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                                <div style="font-size: 18px; font-weight: 900; color: var(--primary);">$12</div>
+                                <button class="btn btn-success" style="padding: 8px 16px; font-size: 14px;">Buy Now</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- TAB: Historial -->
+        <div class="tab-content" id="history">
+            <div class="card">
+                <div class="card-title">📜 Historial de Sorteos</div>
+                
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid var(--border-color);">
+                                <th style="padding: 15px; text-align: left;">Draw #</th>
+                                <th style="padding: 15px; text-align: left;">Números Ganadores</th>
+                                <th style="padding: 15px; text-align: left;">Jackpot</th>
+                                <th style="padding: 15px; text-align: left;">Ganadores</th>
+                                <th style="padding: 15px; text-align: left;">Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid var(--border-color);">
+                                <td style="padding: 15px; font-weight: 700;">#1247</td>
+                                <td style="padding: 15px;">
+                                    <div style="display: flex; gap: 5px;">
+                                        <span class="nft-number" style="padding: 5px 10px;">03</span>
+                                        <span class="nft-number" style="padding: 5px 10px;">12</span>
+                                        <span class="nft-number" style="padding: 5px 10px;">25</span>
+                                        <span class="nft-number" style="padding: 5px 10px;">31</span>
+                                        <span class="nft-number" style="padding: 5px 10px;">44</span>
+                                        <span class="nft-number" style="padding: 5px 10px;">56</span>
+                                    </div>
+                                </td>
+                                <td style="padding: 15px; font-weight: 700;">$2,100,000</td>
+                                <td style="padding: 15px;">2 ganadores</td>
+                                <td style="padding: 15px; color: var(--text-secondary);">Hace 3 días</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--border-color);">
+                                <td style="padding: 15px; font-weight: 700;">#1246</td>
+                                <td style="padding: 15px;">
+                                    <div style="display: flex; gap: 5px;">
+                                        <span class="nft-number" style="padding: 5px 10px;">07</span>
+                                        <span class="nft-number" style="padding: 5px 10px;">14</span>
+                                        <span class="nft-number" style="padding: 5px 10px;">21</span>
+                                        <span class="nft-number" style="padding: 5px 10px;">28</span>
+                                        <span class="nft-number" style="padding: 5px 10px;">35</span>
+                                        <span class="nft-number" style="padding: 5px 10px;">42</span>
+                                    </div>
+                                </td>
+                                <td style="padding: 15px; font-weight: 700;">$3,500,000</td>
+                                <td style="padding: 15px;">1 ganador</td>
+                                <td style="padding: 15px; color: var(--text-secondary);">Hace 6 días</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--border-color);">
+                                <td style="padding: 15px; font-weight: 700;">#1245</td>
+                                <td style="padding: 15px;">
+                                    <div style="display: flex; gap: 5px;">
+                                        <span class="nft-number" style="padding: 5px 10px;">01</span>
+                                        <span class="nft-number" style="padding: 5px 10px;">11</span>
+                                        <span class="nft-number" style="padding: 5px 10px;">19</span>
+                                        <span class="nft-number" style="padding: 5px 10px;">27</span>
+                                        <span class="nft-number" style="padding: 5px 10px;">38</span>
+                                        <span class="nft-number" style="padding: 5px 10px;">51</span>
+                                    </div>
+                                </td>
+                                <td style="padding: 15px; font-weight: 700;">$1,800,000</td>
+                                <td style="padding: 15px;">3 ganadores</td>
+                                <td style="padding: 15px; color: var(--text-secondary);">Hace 9 días</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- TAB: Calculadora -->
+        <div class="tab-content" id="calculator">
+            <div class="card">
+                <div class="card-title">💰 Calculadora de Premios</div>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                    <div style="font-size: 18px; color: var(--text-secondary); margin-bottom: 10px;">
+                        Jackpot Actual
+                    </div>
+                    <div style="font-size: 48px; font-weight: 900; color: var(--primary);">
+                        $2,450,000
+                    </div>
+                </div>
+                
+                <div class="prize-breakdown">
+                    <div class="prize-tier">
+                        <div style="font-weight: 700; margin-bottom: 10px;">🎯 6 Aciertos (Jackpot)</div>
+                        <div style="font-size: 32px; font-weight: 900; color: var(--success);">$1,225,000</div>
+                        <div style="font-size: 14px; color: var(--text-secondary); margin-top: 5px;">50% del pool</div>
+                    </div>
+                    
+                    <div class="prize-tier">
+                        <div style="font-weight: 700; margin-bottom: 10px;">🎯 5 Aciertos</div>
+                        <div style="font-size: 32px; font-weight: 900; color: var(--primary);">$490,000</div>
+                        <div style="font-size: 14px; color: var(--text-secondary); margin-top: 5px;">20% del pool</div>
+                    </div>
+                    
+                    <div class="prize-tier">
+                        <div style="font-weight: 700; margin-bottom: 10px;">🎯 4 Aciertos</div>
+                        <div style="font-size: 32px; font-weight: 900; color: var(--primary);">$367,500</div>
+                        <div style="font-size: 14px; color: var(--text-secondary); margin-top: 5px;">15% del pool</div>
+                    </div>
+                    
+                    <div class="prize-tier">
+                        <div style="font-weight: 700; margin-bottom: 10px;">🎯 3 Aciertos</div>
+                        <div style="font-size: 32px; font-weight: 900; color: var(--primary);">$245,000</div>
+                        <div style="font-size: 14px; color: var(--text-secondary); margin-top: 5px;">10% del pool</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 30px; padding: 20px; background: var(--bg-tertiary); border-radius: 12px;">
+                    <div style="font-weight: 700; margin-bottom: 10px;">📊 Probabilidades</div>
+                    <div style="font-size: 14px; color: var(--text-secondary); line-height: 1.8;">
+                        • 6 aciertos: 1 en 32,468,436<br>
+                        • 5 aciertos: 1 en 1,357,510<br>
+                        • 4 aciertos: 1 en 35,724<br>
+                        • 3 aciertos: 1 en 579
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- TAB: Analizador -->
+        <div class="tab-content" id="analyzer">
+            <div class="card">
+                <div class="card-title">🔍 Analizador de Números</div>
+                
+                <div style="margin: 20px 0;">
+                    <div style="font-weight: 700; margin-bottom: 10px;">Ingresa tus números:</div>
+                    <input type="text" placeholder="Ej: 7, 14, 23, 31, 42, 55" 
+                           style="width: 100%; padding: 15px; border: 2px solid var(--border-color); border-radius: 10px; background: var(--bg-tertiary); color: var(--text-primary); font-size: 16px;">
+                </div>
+                
+                <button class="btn btn-primary">🔍 Analizar</button>
+                
+                <div style="margin-top: 30px; padding: 20px; background: var(--bg-tertiary); border-radius: 12px;">
+                    <div style="font-weight: 700; margin-bottom: 15px;">📊 Análisis:</div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <div style="font-size: 14px; color: var(--text-secondary);">Luck Score</div>
+                        <div style="font-size: 32px; font-weight: 900; color: var(--success);">7.8/10</div>
+                    </div>
+                    
+                    <div style="font-size: 14px; color: var(--text-secondary); line-height: 1.8;">
+                        • Frecuencia: Media (aparecieron 23 veces)<br>
+                        • Última aparición: Draw #1245 (6 días atrás)<br>
+                        • Números calientes: 3 de 6<br>
+                        • Patrón: Secuencia aritmética detectada
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px; padding: 20px; background: rgba(102, 126, 234, 0.1); border-radius: 12px; border-left: 4px solid var(--primary);">
+                    <div style="font-weight: 700; margin-bottom: 10px;">💡 Sugerencia</div>
+                    <div style="font-size: 14px; color: var(--text-secondary);">
+                        Considera reemplazar 42 y 55 por números fríos como 3 o 19 para mayor diversificación.
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- TAB: Leaderboard -->
+        <div class="tab-content" id="leaderboard">
+            <div class="card">
+                <div class="card-title">🏆 Ranking de Jugadores</div>
+                
+                <div class="tabs" style="margin-bottom: 20px;">
+                    <div class="tab active" style="padding: 8px 16px; font-size: 14px;">🎫 Most Tickets</div>
+                    <div class="tab" style="padding: 8px 16px; font-size: 14px;">💰 Biggest Win</div>
+                    <div class="tab" style="padding: 8px 16px; font-size: 14px;">💎 NFT Collectors</div>
+                </div>
+                
+                <div class="leaderboard-item">
+                    <div class="rank gold">🥇</div>
+                    <div class="player-info">
+                        <div class="player-name">Player 0x7a3f...2b4c</div>
+                        <div class="player-stats">247 tickets • 12 wins</div>
+                    </div>
+                    <div style="font-size: 18px; font-weight: 900; color: var(--primary);">247</div>
+                </div>
+                
+                <div class="leaderboard-item">
+                    <div class="rank silver">🥈</div>
+                    <div class="player-info">
+                        <div class="player-name">Player 0x9c2e...8a1f</div>
+                        <div class="player-stats">198 tickets • 9 wins</div>
+                    </div>
+                    <div style="font-size: 18px; font-weight: 900; color: var(--primary);">198</div>
+                </div>
+                
+                <div class="leaderboard-item">
+                    <div class="rank bronze">🥉</div>
+                    <div class="player-info">
+                        <div class="player-name">Player 0x4b8d...5c3a</div>
+                        <div class="player-stats">156 tickets • 11 wins</div>
+                    </div>
+                    <div style="font-size: 18px; font-weight: 900; color: var(--primary);">156</div>
+                </div>
+                
+                <div class="leaderboard-item" style="border: 2px solid var(--success);">
+                    <div class="rank">12</div>
+                    <div class="player-info">
+                        <div class="player-name">You 👈</div>
+                        <div class="player-stats">47 tickets • 4 wins</div>
+                    </div>
+                    <div style="font-size: 18px; font-weight: 900; color: var(--success);">47</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- TAB: Logros -->
+        <div class="tab-content" id="achievements">
+            <div class="card">
+                <div class="card-title">🎖️ Mis Logros</div>
+                
+                <div style="margin-bottom: 20px;">
+                    <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 10px;">
+                        Progreso hacia el próximo logro: Lucky 10
+                    </div>
+                    <div style="background: var(--bg-tertiary); height: 20px; border-radius: 10px; overflow: hidden;">
+                        <div style="background: linear-gradient(90deg, var(--primary), var(--secondary)); height: 100%; width: 70%; display: flex; align-items: center; padding-left: 10px; color: white; font-size: 12px; font-weight: 700;">
+                            7/10 tickets
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="achievements-grid">
+                    <div class="achievement unlocked">
+                        <div class="achievement-icon">🎫</div>
+                        <div class="achievement-name">First Ticket</div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 5px;">Desbloqueado</div>
+                    </div>
+                    
+                    <div class="achievement unlocked">
+                        <div class="achievement-icon">🎯</div>
+                        <div class="achievement-name">Lucky 7</div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 5px;">7 tickets</div>
+                    </div>
+                    
+                    <div class="achievement unlocked">
+                        <div class="achievement-icon">💰</div>
+                        <div class="achievement-name">First Win</div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 5px;">Primer premio</div>
+                    </div>
+                    
+                    <div class="achievement unlocked">
+                        <div class="achievement-icon">💎</div>
+                        <div class="achievement-name">NFT Hunter</div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 5px;">1 Legendary</div>
+                    </div>
+                    
+                    <div class="achievement locked">
+                        <div class="achievement-icon">🔥</div>
+                        <div class="achievement-name">Streak Master</div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 5px;">10 draws</div>
+                    </div>
+                    
+                    <div class="achievement locked">
+                        <div class="achievement-icon">👥</div>
+                        <div class="achievement-name">Pool Creator</div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 5px;">Crear pool</div>
+                    </div>
+                    
+                    <div class="achievement locked">
+                        <div class="achievement-icon">💸</div>
+                        <div class="achievement-name">Big Winner</div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 5px;">Ganar $1000+</div>
+                    </div>
+                    
+                    <div class="achievement locked">
+                        <div class="achievement-icon">🌟</div>
+                        <div class="achievement-name">VIP</div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 5px;">100 tickets</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- TAB: Referidos -->
+        <div class="tab-content" id="referrals">
+            <div class="card">
+                <div class="card-title">👥 Programa de Referidos</div>
+                
+                <div style="background: var(--bg-tertiary); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                    <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 10px;">Tu link de referido:</div>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" value="blocklotto.io/r/alex123" readonly
+                               style="flex: 1; padding: 12px; border: 2px solid var(--border-color); border-radius: 8px; background: var(--bg-secondary); color: var(--text-primary);">
+                        <button class="btn btn-primary">📋 Copiar</button>
+                    </div>
+                </div>
+                
+                <div class="grid-2">
+                    <div class="stat-box">
+                        <div class="stat-value">12</div>
+                        <div class="stat-label">Referidos Totales</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">$24.50</div>
+                        <div class="stat-label">Earnings (10%)</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">$24.50</div>
+                        <div class="stat-label">Disponible</div>
+                    </div>
+                    <div class="stat-box">
+                        <button class="btn btn-success" style="width: 100%;">💰 Claim</button>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 30px;">
+                    <div style="font-weight: 700; margin-bottom: 15px;">🎁 Bonus Tiers</div>
+                    <div style="background: var(--bg-tertiary); padding: 15px; border-radius: 10px; margin-bottom: 10px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>5 Referidos → Free Ticket</div>
+                            <div style="color: var(--success); font-weight: 700;">✓ Desbloqueado</div>
+                        </div>
+                    </div>
+                    <div style="background: var(--bg-tertiary); padding: 15px; border-radius: 10px; margin-bottom: 10px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>10 Referidos → 5 Free Tickets</div>
+                            <div style="color: var(--success); font-weight: 700;">✓ Desbloqueado</div>
+                        </div>
+                    </div>
+                    <div style="background: var(--bg-tertiary); padding: 15px; border-radius: 10px; opacity: 0.6;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>20 Referidos → 1 Legendary NFT</div>
+                            <div>Bloqueado</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- TAB: Loyalty -->
+        <div class="tab-content" id="loyalty">
+            <div class="card">
+                <div class="card-title">⭐ Programa de Loyalty</div>
+                
+                <div style="background: linear-gradient(135deg, var(--primary), var(--secondary)); padding: 30px; border-radius: 16px; color: white; margin-bottom: 20px;">
+                    <div style="font-size: 14px; opacity: 0.9; margin-bottom: 10px;">Tu Nivel Actual</div>
+                    <div style="font-size: 36px; font-weight: 900; margin-bottom: 20px;">🥈 Silver</div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <div>720 puntos</div>
+                        <div>1000 puntos para Gold</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.3); height: 12px; border-radius: 6px; overflow: hidden;">
+                        <div style="background: white; height: 100%; width: 72%;"></div>
+                    </div>
+                </div>
+                
+                <div class="grid-2">
+                    <div style="background: var(--bg-tertiary); padding: 20px; border-radius: 12px;">
+                        <div style="font-weight: 700; margin-bottom: 15px;">💎 Cómo ganar puntos</div>
+                        <div style="font-size: 14px; color: var(--text-secondary); line-height: 2;">
+                            • Comprar ticket: <strong>10 pts</strong><br>
+                            • Referir amigo: <strong>50 pts</strong><br>
+                            • Ganar premio: <strong>100 pts</strong><br>
+                            • Streak 7 días: <strong>200 pts</strong>
+                        </div>
+                    </div>
+                    
+                    <div style="background: var(--bg-tertiary); padding: 20px; border-radius: 12px;">
+                        <div style="font-weight: 700; margin-bottom: 15px;">🎁 Recompensas</div>
+                        <div style="font-size: 14px; color: var(--text-secondary); line-height: 2;">
+                            • Free ticket: <strong>100 pts</strong><br>
+                            • 10% discount: <strong>50 pts</strong><br>
+                            • Exclusive NFT: <strong>500 pts</strong><br>
+                            • VIP draw entry: <strong>1000 pts</strong>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <div style="font-weight: 700; margin-bottom: 15px;">🛒 Catálogo de Recompensas</div>
+                    <div class="grid-3">
+                        <div style="background: var(--bg-tertiary); padding: 15px; border-radius: 10px; text-align: center;">
+                            <div style="font-size: 36px; margin-bottom: 10px;">🎫</div>
+                            <div style="font-weight: 700; margin-bottom: 5px;">Free Ticket</div>
+                            <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 15px;">100 puntos</div>
+                            <button class="btn btn-success" style="width: 100%; padding: 8px;">Canjear</button>
+                        </div>
+                        
+                        <div style="background: var(--bg-tertiary); padding: 15px; border-radius: 10px; text-align: center;">
+                            <div style="font-size: 36px; margin-bottom: 10px;">💎</div>
+                            <div style="font-weight: 700; margin-bottom: 5px;">Exclusive NFT</div>
+                            <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 15px;">500 puntos</div>
+                            <button class="btn btn-secondary" style="width: 100%; padding: 8px;" disabled>Bloqueado</button>
+                        </div>
+                        
+                        <div style="background: var(--bg-tertiary); padding: 15px; border-radius: 10px; text-align: center;">
+                            <div style="font-size: 36px; margin-bottom: 10px;">🎟️</div>
+                            <div style="font-weight: 700; margin-bottom: 5px;">VIP Draw Entry</div>
+                            <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 15px;">1000 puntos</div>
+                            <button class="btn btn-secondary" style="width: 100%; padding: 8px;" disabled>Bloqueado</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <div style="font-weight: 700; margin-bottom: 5px;">✅ ¡Éxito!</div>
+        <div id="toast-message">Ticket comprado exitosamente</div>
+    </div>
+    
+    <!-- Modals -->
+    <div class="modal" id="multiDrawModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('multiDrawModal')">&times;</span>
+            <div style="font-size: 24px; font-weight: 800; margin-bottom: 20px;">📅 Multi-Draw Purchase</div>
+            
+            <div style="margin: 20px 0;">
+                <div style="font-weight: 700; margin-bottom: 10px;">¿Cuántos sorteos?</div>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn btn-secondary" onclick="selectMultiDraw(1)">1 Draw</button>
+                    <button class="btn btn-secondary" onclick="selectMultiDraw(3)">3 Draws</button>
+                    <button class="btn btn-secondary" onclick="selectMultiDraw(5)">5 Draws (-5%)</button>
+                    <button class="btn btn-secondary" onclick="selectMultiDraw(10)">10 Draws (-10%)</button>
+                    <button class="btn btn-secondary" onclick="selectMultiDraw(20)">20 Draws (-15%)</button>
+                </div>
+            </div>
+            
+            <div style="background: var(--bg-tertiary); padding: 20px; border-radius: 12px; margin: 20px 0;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                    <div>Base Price:</div>
+                    <div>$2.00 × <span id="multiDrawCount">1</span> = $<span id="multiDrawBase">2.00</span></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px; color: var(--success);">
+                    <div>Discount:</div>
+                    <div id="multiDrawDiscount">$0.00</div>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-weight: 900; font-size: 18px; border-top: 2px solid var(--border-color); padding-top: 10px;">
+                    <div>Total:</div>
+                    <div id="multiDrawTotal">$2.00</div>
+                </div>
+            </div>
+            
+            <button class="btn btn-success" style="width: 100%;">💳 Purchase</button>
+        </div>
+    </div>
+    
+    <script>
+        // State
+        let selectedNumbers = [];
+        let walletConnected = false;
+        let currentTheme = 'light';
+        let showHotCold = false;
+        
+        // Generate number grid
+        function generateNumberGrid() {
+            const grid = document.getElementById('numbersGrid');
+            grid.innerHTML = '';
+            
+            const hotNumbers = [7, 14, 23, 31, 42];
+            const coldNumbers = [1, 2, 54, 55, 56];
+            
+            for (let i = 1; i <= 56; i++) {
+                const number = document.createElement('div');
+                number.className = 'number';
+                number.textContent = i;
+                number.onclick = () => toggleNumber(i);
+                
+                if (showHotCold) {
+                    if (hotNumbers.includes(i)) number.classList.add('hot');
+                    if (coldNumbers.includes(i)) number.classList.add('cold');
+                }
+                
+                grid.appendChild(number);
+            }
+        }
+        
+        // Toggle number selection
+        function toggleNumber(num) {
+            const index = selectedNumbers.indexOf(num);
+            
+            if (index > -1) {
+                selectedNumbers.splice(index, 1);
+            } else {
+                if (selectedNumbers.length < 6) {
+                    selectedNumbers.push(num);
+                } else {
+                    showToast('⚠️ Máximo 6 números');
+                    return;
+                }
+            }
+            
+            updateSelection();
+        }
+        
+        // Update selection display
+        function updateSelection() {
+            const container = document.getElementById('selectedNumbers');
+            const buyBtn = document.getElementById('buyBtn');
+            
+            if (selectedNumbers.length === 0) {
+                container.innerHTML = '<div style="color: var(--text-secondary);">Selecciona 6 números...</div>';
+                buyBtn.disabled = true;
+            } else {
+                container.innerHTML = selectedNumbers
+                    .sort((a, b) => a - b)
+                    .map(n => `<div class="selected-number">${n}</div>`)
+                    .join('');
+                buyBtn.disabled = selectedNumbers.length !== 6;
+            }
+            
+            // Update grid
+            document.querySelectorAll('.number').forEach(el => {
+                const num = parseInt(el.textContent);
+                if (selectedNumbers.includes(num)) {
+                    el.classList.add('selected');
+                } else {
+                    el.classList.remove('selected');
+                }
+            });
+        }
+        
+        // Quick pick
+        function quickPick() {
+            selectedNumbers = [];
+            while (selectedNumbers.length < 6) {
+                const num = Math.floor(Math.random() * 56) + 1;
+                if (!selectedNumbers.includes(num)) {
+                    selectedNumbers.push(num);
+                }
+            }
+            updateSelection();
+        }
+        
+        // Clear selection
+        function clearSelection() {
+            selectedNumbers = [];
+            updateSelection();
+        }
+        
+        // Toggle hot/cold
+        function toggleHotCold() {
+            showHotCold = !showHotCold;
+            generateNumberGrid();
+            updateSelection();
+        }
+        
+        // Buy ticket
+        function buyTicket() {
+            if (selectedNumbers.length !== 6) return;
+            
+            showToast(`✅ Ticket comprado: ${selectedNumbers.sort((a,b) => a-b).join(', ')}`);
+            selectedNumbers = [];
+            updateSelection();
+        }
+        
+        // Connect wallet
+        function connectWallet() {
+            walletConnected = !walletConnected;
+            const btn = document.querySelector('.wallet-btn');
+            const text = document.getElementById('wallet-text');
+            
+            if (walletConnected) {
+                btn.classList.add('connected');
+                text.textContent = '0x7a3f...2b4c';
+                showToast('✅ Wallet conectada');
+            } else {
+                btn.classList.remove('connected');
+                text.textContent = 'Connect Wallet';
+            }
+        }
+        
+        // Theme toggle
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.body.setAttribute('data-theme', currentTheme);
+            document.querySelector('.theme-toggle').textContent = currentTheme === 'light' ? '🌙' : '☀️';
+        }
+        
+        // Tab switching
+        document.querySelectorAll('.tab, .nav-link').forEach(tab => {
+            tab.addEventListener('click', function() {
+                const targetTab = this.getAttribute('data-tab');
+                
+                // Update active tab
+                document.querySelectorAll('.tab, .nav-link').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Show content
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.getElementById(targetTab)?.classList.add('active');
+            });
+        });
+        
+        // Notifications
+        function toggleNotifications() {
+            const dropdown = document.getElementById('notificationsDropdown');
+            dropdown.classList.toggle('active');
+        }
+        
+        // Close notifications when clicking outside
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('notificationsDropdown');
+            const btn = document.querySelector('.notifications-btn');
+            if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
+                dropdown.classList.remove('active');
+            }
+        });
+        
+        // Toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+        
+        // Modal functions
+        function openMultiDraw() {
+            document.getElementById('multiDrawModal').classList.add('active');
+        }
+        
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+        
+        function selectMultiDraw(count) {
+            const basePrice = 2.00;
+            const discounts = {1: 0, 3: 0, 5: 0.05, 10: 0.10, 20: 0.15};
+            
+            const total = basePrice * count;
+            const discount = total * discounts[count];
+            const final = total - discount;
+            
+            document.getElementById('multiDrawCount').textContent = count;
+            document.getElementById('multiDrawBase').textContent = total.toFixed(2);
+            document.getElementById('multiDrawDiscount').textContent = '-$' + discount.toFixed(2);
+            document.getElementById('multiDrawTotal').textContent = '$' + final.toFixed(2);
+        }
+        
+        // Countdown timer
+        function updateCountdown() {
+            let hours = 23;
+            let minutes = 45;
+            let seconds = 12;
+            
+            setInterval(() => {
+                seconds--;
+                if (seconds < 0) {
+                    seconds = 59;
+                    minutes--;
+                }
+                if (minutes < 0) {
+                    minutes = 59;
+                    hours--;
+                }
+                if (hours < 0) {
+                    hours = 23;
+                    minutes = 59;
+                    seconds = 59;
+                }
+                
+                document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+                document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+                document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+            }, 1000);
+        }
+        
+        // Placeholder functions
+        function loadFavorite() { showToast('💾 Carga tus números favoritos'); }
+        function saveFavorite() { showToast('💾 Números guardados como favoritos'); }
+        function createPool() { showToast('🏊 Creando sindicato...'); }
+        
+        // Initialize
+        generateNumberGrid();
+        updateCountdown();
+    </script>
+</body>
+</html>

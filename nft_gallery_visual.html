@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlockLotto - NFT Ticket Art Gallery</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0a1f;
+            color: white;
+            padding: 40px 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .header h1 {
+            font-size: 48px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 16px;
+        }
+        
+        .header p {
+            font-size: 20px;
+            color: #a0aec0;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .rarity-section {
+            margin-bottom: 80px;
+        }
+        
+        .rarity-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            border-left: 6px solid;
+        }
+        
+        .rarity-header.legendary {
+            border-color: #ff6600;
+        }
+        
+        .rarity-header.epic {
+            border-color: #9f7aea;
+        }
+        
+        .rarity-header.rare {
+            border-color: #4299e1;
+        }
+        
+        .rarity-header.common {
+            border-color: #718096;
+        }
+        
+        .rarity-title {
+            font-size: 32px;
+            font-weight: 800;
+        }
+        
+        .rarity-chance {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            font-weight: 600;
+        }
+        
+        .tickets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+        }
+        
+        .ticket-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.4s;
+            cursor: pointer;
+        }
+        
+        .ticket-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(102, 126, 234, 0.6);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+        
+        .ticket-art {
+            width: 100%;
+            aspect-ratio: 4/5;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Cosmic Purple Background */
+        .cosmic-purple {
+            background: radial-gradient(circle at center, #667eea 0%, #764ba2 50%, #0a0a1f 100%);
+            position: relative;
+        }
+        
+        .cosmic-purple::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20% 30%, white, transparent),
+                radial-gradient(2px 2px at 60% 70%, white, transparent),
+                radial-gradient(1px 1px at 50% 50%, white, transparent),
+                radial-gradient(1px 1px at 80% 10%, white, transparent),
+                radial-gradient(2px 2px at 90% 60%, white, transparent);
+            background-size: 200% 200%;
+            animation: twinkle 4s infinite;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* Neon Grid Background */
+        .neon-grid {
+            background: #0a0a1f;
+            background-image: 
+                linear-gradient(rgba(0, 255, 136, 0.2) 2px, transparent 2px),
+                linear-gradient(90deg, rgba(0, 255, 136, 0.2) 2px, transparent 2px);
+            background-size: 50px 50px;
+            position: relative;
+        }
+        
+        .neon-grid::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(0, 255, 255, 0.2) 0%, transparent 70%);
+            animation: pulse 3s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        
+        /* Blockchain Nodes Background */
+        .blockchain-nodes {
+            background: #0a0a1f;
+            position: relative;
+        }
+        
+        /* Lucky Stars Background */
+        .lucky-stars {
+            background: radial-gradient(circle at center, #ffd700 0%, #ff8800 50%, #0a0a1f 100%);
+            position: relative;
+        }
+        
+        /* Main Elements */
+        .main-element {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 120px;
+            animation: float 3s ease-in-out infinite;
+            filter: drop-shadow(0 0 20px currentColor);
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(-50%, -50%) translateY(0px); }
+            50% { transform: translate(-50%, -50%) translateY(-10px); }
+        }
+        
+        .glow-effect {
+            filter: drop-shadow(0 0 30px currentColor) drop-shadow(0 0 60px currentColor);
+        }
+        
+        .rainbow-shimmer {
+            animation: rainbow 3s linear infinite;
+        }
+        
+        @keyframes rainbow {
+            0% { filter: hue-rotate(0deg) drop-shadow(0 0 30px currentColor); }
+            100% { filter: hue-rotate(360deg) drop-shadow(0 0 30px currentColor); }
+        }
+        
+        /* Ticket Info Overlay */
+        .ticket-info {
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.7) 50%, transparent 100%);
+            padding: 24px;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+        
+        .rarity-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+        
+        .rarity-badge.legendary {
+            background: linear-gradient(135deg, #ff6600, #ff0066);
+        }
+        
+        .rarity-badge.epic {
+            background: linear-gradient(135deg, #9f7aea, #667eea);
+        }
+        
+        .rarity-badge.rare {
+            background: linear-gradient(135deg, #4299e1, #0099ff);
+        }
+        
+        .rarity-badge.common {
+            background: linear-gradient(135deg, #718096, #4a5568);
+        }
+        
+        .ticket-id {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .ticket-numbers {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin: 12px 0;
+        }
+        
+        .number-ball {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 14px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .ticket-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #a0aec0;
+            margin-top: 12px;
+        }
+        
+        .features-section {
+            margin-top: 80px;
+            padding: 60px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .feature-card {
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        
+        .feature-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        
+        .feature-desc {
+            color: #a0aec0;
+            line-height: 1.6;
+        }
+        
+        .generate-btn {
+            display: block;
+            margin: 40px auto;
+            padding: 18px 40px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .generate-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 BlockLotto NFT Gallery</h1>
+            <p>Cada boleto es una obra de arte única y coleccionable</p>
+        </div>
+        
+        <!-- LEGENDARY -->
+        <div class="rarity-section">
+            <div class="rarity-header legendary">
+                <div class="rarity-title">✨ LEGENDARY</div>
+                <div class="rarity-chance">1% Chance</div>
+            </div>
+            
+            <div class="tickets-grid">
+                <div class="ticket-card">
+                    <div class="ticket-art lucky-stars">
+                        <div class="main-element rainbow-shimmer">🐉</div>
+                        <div class="ticket-info">
+                            <div class="rarity-badge legendary">LEGENDARY</div>
+                            <div class="ticket-id">TICKET #1248-0777</div>
+                            <div class="ticket-numbers">
+                                <div class="number-ball">07</div>
+                                <div class="number-ball">14</div>
+                                <div class="number-ball">21</div>
+                                <div class="number-ball">28</div>
+                                <div class="number-ball">35</div>
+                                <div class="number-ball">42</div>
+                            </div>
+                            <div class="ticket-footer">
+                                <span>🎰 BlockLotto</span>
+                                <span>Draw #1248</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- EPIC -->
+        <div class="rarity-section">
+            <div class="rarity-header epic">
+                <div class="rarity-title">💜 EPIC</div>
+                <div class="rarity-chance">9% Chance</div>
+            </div>
+            
+            <div class="tickets-grid">
+                <div class="ticket-card">
+                    <div class="ticket-art lucky-stars">
+                        <div class="main-element glow-effect">🔮</div>
+                        <div class="ticket-info">
+                            <div class="rarity-badge epic">EPIC</div>
+                            <div class="ticket-id">TICKET #1248-0156</div>
+                            <div class="ticket-numbers">
+                                <div class="number-ball">03</div>
+                                <div class="number-ball">12</div>
+                                <div class="number-ball">19</div>
+                                <div class="number-ball">27</div>
+                                <div class="number-ball">33</div>
+                                <div class="number-ball">51</div>
+                            </div>
+                            <div class="ticket-footer">
+                                <span>🎰 BlockLotto</span>
+                                <span>Draw #1248</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="ticket-card">
+                    <div class="ticket-art lucky-stars">
+                        <div class="main-element glow-effect">🦄</div>
+                        <div class="ticket-info">
+                            <div class="rarity-badge epic">EPIC</div>
+                            <div class="ticket-id">TICKET #1248-0234</div>
+                            <div class="ticket-numbers">
+                                <div class="number-ball">05</div>
+                                <div class="number-ball">16</div>
+                                <div class="number-ball">23</div>
+                                <div class="number-ball">31</div>
+                                <div class="number-ball">44</div>
+                                <div class="number-ball">52</div>
+                            </div>
+                            <div class="ticket-footer">
+                                <span>🎰 BlockLotto</span>
+                                <span>Draw #1248</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- RARE -->
+        <div class="rarity-section">
+            <div class="rarity-header rare">
+                <div class="rarity-title">💎 RARE</div>
+                <div class="rarity-chance">30% Chance</div>
+            </div>
+            
+            <div class="tickets-grid">
+                <div class="ticket-card">
+                    <div class="ticket-art neon-grid">
+                        <div class="main-element glow-effect" style="color: #00ff88;">💎</div>
+                        <div class="ticket-info">
+                            <div class="rarity-badge rare">RARE</div>
+                            <div class="ticket-id">TICKET #1248-0089</div>
+                            <div class="ticket-numbers">
+                                <div class="number-ball">08</div>
+                                <div class="number-ball">15</div>
+                                <div class="number-ball">22</div>
+                                <div class="number-ball">29</div>
+                                <div class="number-ball">36</div>
+                                <div class="number-ball">43</div>
+                            </div>
+                            <div class="ticket-footer">
+                                <span>🎰 BlockLotto</span>
+                                <span>Draw #1248</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="ticket-card">
+                    <div class="ticket-art blockchain-nodes">
+                        <canvas id="blockchainCanvas1" style="position: absolute; width: 100%; height: 100%;"></canvas>
+                        <div class="main-element glow-effect" style="color: #4299e1;">🧿</div>
+                        <div class="ticket-info">
+                            <div class="rarity-badge rare">RARE</div>
+                            <div class="ticket-id">TICKET #1248-0123</div>
+                            <div class="ticket-numbers">
+                                <div class="number-ball">11</div>
+                                <div class="number-ball">18</div>
+                                <div class="number-ball">25</div>
+                                <div class="number-ball">32</div>
+                                <div class="number-ball">39</div>
+                                <div class="number-ball">46</div>
+                            </div>
+                            <div class="ticket-footer">
+                                <span>🎰 BlockLotto</span>
+                                <span>Draw #1248</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="ticket-card">
+                    <div class="ticket-art neon-grid">
+                        <div class="main-element glow-effect" style="color: #ff00ff;">🎰</div>
+                        <div class="ticket-info">
+                            <div class="rarity-badge rare">RARE</div>
+                            <div class="ticket-id">TICKET #1248-0345</div>
+                            <div class="ticket-numbers">
+                                <div class="number-ball">02</div>
+                                <div class="number-ball">13</div>
+                                <div class="number-ball">24</div>
+                                <div class="number-ball">35</div>
+                                <div class="number-ball">46</div>
+                                <div class="number-ball">55</div>
+                            </div>
+                            <div class="ticket-footer">
+                                <span>🎰 BlockLotto</span>
+                                <span>Draw #1248</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- COMMON -->
+        <div class="rarity-section">
+            <div class="rarity-header common">
+                <div class="rarity-title">⚪ COMMON</div>
+                <div class="rarity-chance">60% Chance</div>
+            </div>
+            
+            <div class="tickets-grid">
+                <div class="ticket-card">
+                    <div class="ticket-art cosmic-purple">
+                        <div class="main-element">🍀</div>
+                        <div class="ticket-info">
+                            <div class="rarity-badge common">COMMON</div>
+                            <div class="ticket-id">TICKET #1248-0042</div>
+                            <div class="ticket-numbers">
+                                <div class="number-ball">07</div>
+                                <div class="number-ball">14</div>
+                                <div class="number-ball">23</div>
+                                <div class="number-ball">31</div>
+                                <div class="number-ball">42</div>
+                                <div class="number-ball">55</div>
+                            </div>
+                            <div class="ticket-footer">
+                                <span>🎰 BlockLotto</span>
+                                <span>Draw #1248</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="ticket-card">
+                    <div class="ticket-art cosmic-purple">
+                        <div class="main-element" style="color: #ffd700;">🪙</div>
+                        <div class="ticket-info">
+                            <div class="rarity-badge common">COMMON</div>
+                            <div class="ticket-id">TICKET #1248-0198</div>
+                            <div class="ticket-numbers">
+                                <div class="number-ball">09</div>
+                                <div class="number-ball">17</div>
+                                <div class="number-ball">26</div>
+                                <div class="number-ball">34</div>
+                                <div class="number-ball">41</div>
+                                <div class="number-ball">50</div>
+                            </div>
+                            <div class="ticket-footer">
+                                <span>🎰 BlockLotto</span>
+                                <span>Draw #1248</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="ticket-card">
+                    <div class="ticket-art cosmic-purple">
+                        <div class="main-element">⭐</div>
+                        <div class="ticket-info">
+                            <div class="rarity-badge common">COMMON</div>
+                            <div class="ticket-id">TICKET #1248-0267</div>
+                            <div class="ticket-numbers">
+                                <div class="number-ball">06</div>
+                                <div class="number-ball">12</div>
+                                <div class="number-ball">20</div>
+                                <div class="number-ball">28</div>
+                                <div class="number-ball">37</div>
+                                <div class="number-ball">48</div>
+                            </div>
+                            <div class="ticket-footer">
+                                <span>🎰 BlockLotto</span>
+                                <span>Draw #1248</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <button class="generate-btn" onclick="alert('🎨 En la app real, cada ticket se genera automáticamente con arte único basado en el ticket ID!')">
+            🎲 Generar Nuevo Ticket
+        </button>
+        
+        <!-- Features -->
+        <div class="features-section">
+            <h2 style="text-align: center; font-size: 36px; margin-bottom: 20px;">✨ Características del Sistema NFT</h2>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎨</div>
+                    <div class="feature-title">Arte Generativo Único</div>
+                    <div class="feature-desc">
+                        Cada ticket tiene arte generado algorítmicamente basado en su ID único. No hay dos tickets iguales.
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">💎</div>
+                    <div class="feature-title">Sistema de Rarezas</div>
+                    <div class="feature-desc">
+                        4 niveles de rareza (Common, Rare, Epic, Legendary) determinados por el hash del ticket. Los raros valen más.
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🔄</div>
+                    <div class="feature-title">Marketplace Secundario</div>
+                    <div class="feature-desc">
+                        Vende tus tickets en OpenSea antes del sorteo. Los tickets raros pueden venderse a premium.
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">💰</div>
+                    <div class="feature-title">Royalties 5%</div>
+                    <div class="feature-desc">
+                        BlockLotto recibe 5% en cada reventa. Revenue adicional pasivo del mercado secundario.
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🏆</div>
+                    <div class="feature-title">Coleccionables</div>
+                    <div class="feature-desc">
+                        Colecciona tickets históricos ganadores. Los tickets legendarios ganadores son ultra valiosos.
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🎭</div>
+                    <div class="feature-title">Ediciones Especiales</div>
+                    <div class="feature-desc">
+                        Sorteos temáticos (Halloween, Navidad, Año Nuevo Lunar) con arte exclusivo de temporada.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Draw blockchain nodes animation
+        function drawBlockchainNodes() {
+            const canvas = document.getElementById('blockchainCanvas1');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width = canvas.offsetWidth;
+            const height = canvas.height = canvas.offsetHeight;
+            
+            // Nodos
+            const nodes = [];
+            for (let i = 0; i < 8; i++) {
+                nodes.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    radius: Math.random() * 10 + 5,
+                    vx: (Math.random() - 0.5) * 0.5,
+                    vy: (Math.random() - 0.5) * 0.5
+                });
+            }
+            
+            function animate() {
+                ctx.fillStyle = 'rgba(10, 10, 31, 0.1)';
+                ctx.fillRect(0, 0, width, height);
+                
+                // Actualizar posiciones
+                nodes.forEach(node => {
+                    node.x += node.vx;
+                    node.y += node.vy;
+                    
+                    if (node.x < 0 || node.x > width) node.vx *= -1;
+                    if (node.y < 0 || node.y > height) node.vy *= -1;
+                });
+                
+                // Dibujar conexiones
+                ctx.strokeStyle = 'rgba(66, 153, 225, 0.3)';
+                ctx.lineWidth = 2;
+                
+                for (let i = 0; i < nodes.length; i++) {
+                    for (let j = i + 1; j < nodes.length; j++) {
+                        const dx = nodes[j].x - nodes[i].x;
+                        const dy = nodes[j].y - nodes[i].y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < 150) {
+                            ctx.beginPath();
+                            ctx.moveTo(nodes[i].x, nodes[i].y);
+                            ctx.lineTo(nodes[j].x, nodes[j].y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+                
+                // Dibujar nodos
+                nodes.forEach(node => {
+                    const gradient = ctx.createRadialGradient(
+                        node.x, node.y, 0,
+                        node.x, node.y, node.radius
+                    );
+                    gradient.addColorStop(0, '#00ffff');
+                    gradient.addColorStop(1, 'rgba(0, 255, 255, 0.3)');
+                    
+                    ctx.beginPath();
+                    ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = gradient;
+                    ctx.fill();
+                    
+                    ctx.strokeStyle = '#00ffff';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                });
+                
+                requestAnimationFrame(animate);
+            }
+            
+            animate();
+        }
+        
+        // Initialize
+        setTimeout(drawBlockchainNodes, 100);
+    </script>
+</body>
+</html>

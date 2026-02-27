@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlockLotto - Business Plan Visual</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+            color: #fff;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .header h1 {
+            font-size: 48px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 16px;
+        }
+        
+        .header p {
+            font-size: 20px;
+            color: #a0aec0;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 40px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        
+        .tab {
+            padding: 14px 28px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .tab:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 30px;
+            transition: transform 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(102, 126, 234, 0.5);
+        }
+        
+        .card h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #a0aec0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .metric-value {
+            font-size: 42px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+        
+        .metric-label {
+            color: #718096;
+            font-size: 14px;
+        }
+        
+        .chart-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: #e2e8f0;
+        }
+        
+        canvas {
+            max-height: 400px;
+        }
+        
+        .tokenomics-visual {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 30px;
+        }
+        
+        .flow-diagram {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .flow-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px 30px;
+            border-radius: 12px;
+            text-align: center;
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .flow-arrow {
+            font-size: 30px;
+            color: #667eea;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .comparison-table th {
+            background: rgba(102, 126, 234, 0.2);
+            font-weight: 700;
+        }
+        
+        .comparison-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .highlight {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-weight: 700;
+        }
+        
+        .timeline {
+            position: relative;
+            padding-left: 40px;
+            margin: 40px 0;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-bottom: 40px;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -48px;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            background: #667eea;
+            border: 4px solid #1a202c;
+            border-radius: 50%;
+        }
+        
+        .timeline-content {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .timeline-content h4 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #e2e8f0;
+        }
+        
+        .timeline-content p {
+            color: #a0aec0;
+            line-height: 1.6;
+        }
+        
+        .revenue-streams {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .revenue-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+        }
+        
+        .revenue-card .icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        
+        .revenue-card h4 {
+            font-size: 18px;
+            margin-bottom: 12px;
+            color: #e2e8f0;
+        }
+        
+        .revenue-card .amount {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .cta-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 50px;
+            text-align: center;
+            margin-top: 60px;
+            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.4);
+        }
+        
+        .cta-box h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        
+        .cta-box p {
+            font-size: 20px;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        .cta-button {
+            background: white;
+            color: #667eea;
+            padding: 18px 40px;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .cta-button:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎰 BlockLotto Business Plan</h1>
+            <p>Lotería Blockchain Descentralizada - Proyecciones Financieras</p>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab(0)">📊 Overview</button>
+            <button class="tab" onclick="switchTab(1)">💰 Revenue Model</button>
+            <button class="tab" onclick="switchTab(2)">📈 Proyecciones</button>
+            <button class="tab" onclick="switchTab(3)">🪙 Tokenomics</button>
+            <button class="tab" onclick="switchTab(4)">🎯 Go-to-Market</button>
+            <button class="tab" onclick="switchTab(5)">💎 Valuación</button>
+        </div>
+        
+        <!-- TAB 1: Overview -->
+        <div class="tab-content active">
+            <div class="grid">
+                <div class="card">
+                    <h3>🌍 Mercado Total</h3>
+                    <div class="metric-value">$350B</div>
+                    <div class="metric-label">Loterías Globales Anuales</div>
+                </div>
+                
+                <div class="card">
+                    <h3>🎮 Crypto Gaming</h3>
+                    <div class="metric-value">$4.6B</div>
+                    <div class="metric-label">Market Size 2024</div>
+                </div>
+                
+                <div class="card">
+                    <h3>📈 Crecimiento</h3>
+                    <div class="metric-value">21%</div>
+                    <div class="metric-label">CAGR hasta 2030</div>
+                </div>
+                
+                <div class="card">
+                    <h3>💎 Ventaja</h3>
+                    <div class="metric-value">85%</div>
+                    <div class="metric-label">Retorno a Jugadores vs 50%</div>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <div class="chart-title">Comparativa: BlockLotto vs Loterías Tradicionales</div>
+                <canvas id="comparisonChart"></canvas>
+            </div>
+            
+            <h2 style="margin: 40px 0 20px; font-size: 28px;">🎯 Ventajas Competitivas</h2>
+            
+            <div class="grid">
+                <div class="card">
+                    <h3>⚡ Transparencia Total</h3>
+                    <p style="color: #a0aec0; line-height: 1.6;">
+                        Smart contracts auditables públicamente. Todos los sorteos verificables on-chain.
+                    </p>
+                </div>
+                
+                <div class="card">
+                    <h3>💰 Mejores Odds</h3>
+                    <p style="color: #a0aec0; line-height: 1.6;">
+                        85% retorno vs 50% tradicional. 35% más dinero a premios.
+                    </p>
+                </div>
+                
+                <div class="card">
+                    <h3>⚡ Pagos Instantáneos</h3>
+                    <p style="color: #a0aec0; line-height: 1.6;">
+                        Cobra tu premio en segundos, no en semanas. Directo a tu wallet.
+                    </p>
+                </div>
+                
+                <div class="card">
+                    <h3>🌍 Global Sin Fronteras</h3>
+                    <p style="color: #a0aec0; line-height: 1.6;">
+                        Cualquier persona del mundo puede participar. Sin restricciones geográficas.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- TAB 2: Revenue Model -->
+        <div class="tab-content">
+            <h2 style="margin-bottom: 30px; font-size: 32px;">Distribución por Boleto ($2 USD)</h2>
+            
+            <div class="chart-container">
+                <canvas id="ticketDistributionChart"></canvas>
+            </div>
+            
+            <h3 style="margin: 40px 0 20px; font-size: 24px;">💵 Fuentes de Ingreso</h3>
+            
+            <div class="revenue-streams">
+                <div class="revenue-card">
+                    <div class="icon">🎫</div>
+                    <h4>Comisión Boletos</h4>
+                    <div class="amount">10%</div>
+                    <p style="color: #a0aec0; margin-top: 10px;">Revenue Primario</p>
+                </div>
+                
+                <div class="revenue-card">
+                    <div class="icon">🪙</div>
+                    <h4>Token $LOTTO</h4>
+                    <div class="amount">15%</div>
+                    <p style="color: #a0aec0; margin-top: 10px;">Año 2-3</p>
+                </div>
+                
+                <div class="revenue-card">
+                    <div class="icon">👥</div>
+                    <h4>Sindicatos</h4>
+                    <div class="amount">2%</div>
+                    <p style="color: #a0aec0; margin-top: 10px;">Fee gestión</p>
+                </div>
+                
+                <div class="revenue-card">
+                    <div class="icon">📢</div>
+                    <h4>Publicidad NFT</h4>
+                    <div class="amount">$5K</div>
+                    <p style="color: #a0aec0; margin-top: 10px;">Por sorteo</p>
+                </div>
+                
+                <div class="revenue-card">
+                    <div class="icon">🏢</div>
+                    <h4>White-Label B2B</h4>
+                    <div class="amount">$25K</div>
+                    <p style="color: #a0aec0; margin-top: 10px;">Setup + licencia</p>
+                </div>
+            </div>
+            
+            <div class="tokenomics-visual">
+                <h3 style="font-size: 24px; margin-bottom: 30px;">Ejemplo: 50,000 Usuarios Activos/Mes</h3>
+                
+                <div class="flow-diagram">
+                    <div class="flow-box">
+                        <div style="font-size: 14px; opacity: 0.8; margin-bottom: 8px;">Usuarios</div>
+                        <div style="font-size: 32px; font-weight: 900;">50,000</div>
+                    </div>
+                    
+                    <div class="flow-arrow">→</div>
+                    
+                    <div class="flow-box">
+                        <div style="font-size: 14px; opacity: 0.8; margin-bottom: 8px;">Boletos/Usuario</div>
+                        <div style="font-size: 32px; font-weight: 900;">10</div>
+                    </div>
+                    
+                    <div class="flow-arrow">→</div>
+                    
+                    <div class="flow-box">
+                        <div style="font-size: 14px; opacity: 0.8; margin-bottom: 8px;">Ingresos Brutos</div>
+                        <div style="font-size: 32px; font-weight: 900;">$1M</div>
+                    </div>
+                    
+                    <div class="flow-arrow">→</div>
+                    
+                    <div class="flow-box" style="background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);">
+                        <div style="font-size: 14px; opacity: 0.8; margin-bottom: 8px;">Revenue (10%)</div>
+                        <div style="font-size: 32px; font-weight: 900;">$100K</div>
+                    </div>
+                </div>
+                
+                <p style="text-align: center; color: #a0aec0; margin-top: 20px;">
+                    Revenue Anual: $1,200,000 USD
+                </p>
+            </div>
+        </div>
+        
+        <!-- TAB 3: Proyecciones -->
+        <div class="tab-content">
+            <div class="chart-container">
+                <div class="chart-title">📈 Proyección de Revenue (3 Años)</div>
+                <canvas id="revenueProjectionChart"></canvas>
+            </div>
+            
+            <div class="chart-container">
+                <div class="chart-title">👥 Crecimiento de Usuarios</div>
+                <canvas id="userGrowthChart"></canvas>
+            </div>
+            
+            <h3 style="margin: 40px 0 20px; font-size: 24px;">Proyecciones Detalladas</h3>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Año</th>
+                        <th>Usuarios</th>
+                        <th>Boletos/Mes</th>
+                        <th>Revenue Anual</th>
+                        <th>Margen</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Año 1</strong></td>
+                        <td>10,000</td>
+                        <td>80,000</td>
+                        <td>$150,000</td>
+                        <td>60%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Año 2</strong></td>
+                        <td>50,000</td>
+                        <td>500,000</td>
+                        <td><span class="highlight">$1,300,000</span></td>
+                        <td>75%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Año 3</strong></td>
+                        <td>250,000</td>
+                        <td>4,000,000</td>
+                        <td><span class="highlight">$3,300,000</span></td>
+                        <td>80%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- TAB 4: Tokenomics -->
+        <div class="tab-content">
+            <div class="chart-container">
+                <div class="chart-title">🪙 Distribución Token $LOTTO (1B Supply)</div>
+                <canvas id="tokenDistributionChart"></canvas>
+            </div>
+            
+            <div class="grid" style="margin-top: 40px;">
+                <div class="card">
+                    <h3>💎 Precio Objetivo (Año 2)</h3>
+                    <div class="metric-value">$0.01</div>
+                    <div class="metric-label">Market Cap: $10M</div>
+                </div>
+                
+                <div class="card">
+                    <h3>🚀 Precio Objetivo (Año 3)</h3>
+                    <div class="metric-value">$0.0375</div>
+                    <div class="metric-label">Market Cap: $37.5M</div>
+                </div>
+                
+                <div class="card">
+                    <h3>👥 Holders Fundadores</h3>
+                    <div class="metric-value">250M</div>
+                    <div class="metric-label">25% del supply</div>
+                </div>
+                
+                <div class="card">
+                    <h3>💰 Valor (Año 3)</h3>
+                    <div class="metric-value">$9.3M</div>
+                    <div class="metric-label">250M × $0.0375</div>
+                </div>
+            </div>
+            
+            <h3 style="margin: 40px 0 20px; font-size: 24px;">Utilidad del Token</h3>
+            
+            <div class="revenue-streams">
+                <div class="revenue-card">
+                    <div class="icon">🎁</div>
+                    <h4>Descuentos</h4>
+                    <p style="color: #a0aec0; margin-top: 10px;">
+                        Stake tokens para obtener 5-15% descuento en boletos
+                    </p>
+                </div>
+                
+                <div class="revenue-card">
+                    <div class="icon">🗳️</div>
+                    <h4>Gobernanza</h4>
+                    <p style="color: #a0aec0; margin-top: 10px;">
+                        Vota parámetros del protocolo y nuevas features
+                    </p>
+                </div>
+                
+                <div class="revenue-card">
+                    <div class="icon">💸</div>
+                    <h4>Revenue Share</h4>
+                    <p style="color: #a0aec0; margin-top: 10px;">
+                        Recibe % del revenue en USDC mensualmente
+                    </p>
+                </div>
+                
+                <div class="revenue-card">
+                    <div class="icon">🎫</div>
+                    <h4>Boletos Gratis</h4>
+                    <p style="color: #a0aec0; margin-top: 10px;">
+                        Stake para recibir boletos gratuitos cada mes
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- TAB 5: Go-to-Market -->
+        <div class="tab-content">
+            <h2 style="margin-bottom: 30px; font-size: 32px;">🎯 Estrategia de Lanzamiento</h2>
+            
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h4>Fase 1: Early Adopters (Mes 1-3)</h4>
+                        <p><strong>Target:</strong> 500-1,000 usuarios crypto-nativos</p>
+                        <p><strong>Canales:</strong> Twitter, Discord, Reddit crypto</p>
+                        <p><strong>Budget:</strong> $10,000</p>
+                        <p><strong>Táctica:</strong> Airdrop 1,000 LOTTO + 5 boletos gratis</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h4>Fase 2: Expansión (Mes 4-9)</h4>
+                        <p><strong>Target:</strong> 5,000-10,000 usuarios broader crypto</p>
+                        <p><strong>Canales:</strong> YouTube, TikTok, Podcasts</p>
+                        <p><strong>Budget:</strong> $50,000</p>
+                        <p><strong>Táctica:</strong> Partnerships Polygon/Chainlink, AMAs</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h4>Fase 3: Mercado Masivo (Mes 10+)</h4>
+                        <p><strong>Target:</strong> 50,000-100,000 usuarios mainstream</p>
+                        <p><strong>Canales:</strong> Facebook/Instagram Ads, Google</p>
+                        <p><strong>Budget:</strong> $100,000-200,000</p>
+                        <p><strong>Táctica:</strong> Onboarding simple, multi-lenguaje</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <div class="chart-title">💰 ROI de Marketing</div>
+                <canvas id="marketingROIChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- TAB 6: Valuación -->
+        <div class="tab-content">
+            <h2 style="margin-bottom: 30px; font-size: 32px;">💎 Valuación del Protocolo</h2>
+            
+            <div class="chart-container">
+                <div class="chart-title">Proyección de Valuación (3 Años)</div>
+                <canvas id="valuationChart"></canvas>
+            </div>
+            
+            <h3 style="margin: 40px 0 20px; font-size: 24px;">Escenarios de Exit</h3>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Escenario</th>
+                        <th>Multiple</th>
+                        <th>Valuación Total</th>
+                        <th>Equity Founders (40%)</th>
+                        <th>Por Founder</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Conservador</strong></td>
+                        <td>10x revenue</td>
+                        <td>$33M</td>
+                        <td>$13.2M</td>
+                        <td><span class="highlight">$3.3M</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Moderado</strong></td>
+                        <td>50x revenue</td>
+                        <td>$165M</td>
+                        <td>$66M</td>
+                        <td><span class="highlight">$16.5M</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Optimista</strong></td>
+                        <td>120x revenue</td>
+                        <td>$400M</td>
+                        <td>$160M</td>
+                        <td><span class="highlight">$40M</span></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3 style="margin: 40px 0 20px; font-size: 24px;">🎯 Fundraising Roadmap</h3>
+            
+            <div class="revenue-streams">
+                <div class="revenue-card">
+                    <div class="icon">🌱</div>
+                    <h4>Pre-Seed</h4>
+                    <div class="amount">$150K</div>
+                    <p style="color: #a0aec0; margin-top: 10px;">
+                        5-8% equity<br>
+                        Valuación: $2M
+                    </p>
+                </div>
+                
+                <div class="revenue-card">
+                    <div class="icon">🌿</div>
+                    <h4>Seed</h4>
+                    <div class="amount">$500K</div>
+                    <p style="color: #a0aec0; margin-top: 10px;">
+                        10-15% equity<br>
+                        Valuación: $4-5M
+                    </p>
+                </div>
+                
+                <div class="revenue-card">
+                    <div class="icon">🌳</div>
+                    <h4>Series A</h4>
+                    <div class="amount">$2-5M</div>
+                    <p style="color: #a0aec0; margin-top: 10px;">
+                        15-20% equity<br>
+                        Valuación: $20-30M
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- CTA -->
+        <div class="cta-box">
+            <h2>🚀 ¿Listo para Revolucionar las Loterías?</h2>
+            <p>Únete a BlockLotto en la disrupción de una industria de $350 mil millones</p>
+            <button class="cta-button" onclick="alert('¡Contacta al equipo para más información!')">
+                📧 Contactar Equipo Fundador
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        // Chart.js default config
+        Chart.defaults.color = '#a0aec0';
+        Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.1)';
+        
+        // Comparison Chart
+        new Chart(document.getElementById('comparisonChart'), {
+            type: 'bar',
+            data: {
+                labels: ['BlockLotto', 'Melate (México)', 'Powerball (USA)'],
+                datasets: [{
+                    label: '% a Premios',
+                    data: [85, 55, 50],
+                    backgroundColor: ['#667eea', '#ed8936', '#f56565']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Ticket Distribution
+        new Chart(document.getElementById('ticketDistributionChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Prize Pool Actual (65%)', 'Jackpot Acumulado (20%)', 'Protocolo (10%)', 'Reservas (5%)'],
+                datasets: [{
+                    data: [65, 20, 10, 5],
+                    backgroundColor: ['#48bb78', '#ed8936', '#667eea', '#9f7aea']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+        
+        // Revenue Projection
+        new Chart(document.getElementById('revenueProjectionChart'), {
+            type: 'line',
+            data: {
+                labels: ['Año 1', 'Año 2', 'Año 3'],
+                datasets: [{
+                    label: 'Revenue Total',
+                    data: [150000, 1300000, 3300000],
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + (value/1000000).toFixed(1) + 'M';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // User Growth
+        new Chart(document.getElementById('userGrowthChart'), {
+            type: 'line',
+            data: {
+                labels: ['Mes 3', 'Mes 6', 'Mes 9', 'Mes 12', 'Año 2', 'Año 3'],
+                datasets: [{
+                    label: 'Usuarios Activos',
+                    data: [500, 2000, 5000, 10000, 50000, 250000],
+                    borderColor: '#48bb78',
+                    backgroundColor: 'rgba(72, 187, 120, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return (value/1000).toFixed(0) + 'K';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Token Distribution
+        new Chart(document.getElementById('tokenDistributionChart'), {
+            type: 'pie',
+            data: {
+                labels: [
+                    'Comunidad & Rewards (40%)',
+                    'Equipo Fundador (25%)',
+                    'Inversores (15%)',
+                    'Tesorería DAO (10%)',
+                    'Liquidez DEX (5%)',
+                    'Marketing (5%)'
+                ],
+                datasets: [{
+                    data: [40, 25, 15, 10, 5, 5],
+                    backgroundColor: [
+                        '#48bb78',
+                        '#667eea',
+                        '#ed8936',
+                        '#9f7aea',
+                        '#38b2ac',
+                        '#f56565'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+        
+        // Marketing ROI
+        new Chart(document.getElementById('marketingROIChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Fase 1', 'Fase 2', 'Fase 3'],
+                datasets: [
+                    {
+                        label: 'Inversión',
+                        data: [10000, 50000, 150000],
+                        backgroundColor: '#f56565'
+                    },
+                    {
+                        label: 'Revenue Generado',
+                        data: [50000, 300000, 1500000],
+                        backgroundColor: '#48bb78'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + (value/1000).toFixed(0) + 'K';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Valuation Chart
+        new Chart(document.getElementById('valuationChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Año 1', 'Año 2', 'Año 3'],
+                datasets: [
+                    {
+                        label: 'Conservador (10x)',
+                        data: [3000000, 13000000, 33000000],
+                        backgroundColor: '#667eea'
+                    },
+                    {
+                        label: 'Moderado (50x)',
+                        data: [7500000, 65000000, 165000000],
+                        backgroundColor: '#48bb78'
+                    },
+                    {
+                        label: 'Optimista (120x)',
+                        data: [18000000, 156000000, 400000000],
+                        backgroundColor: '#ed8936'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + (value/1000000).toFixed(0) + 'M';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Tab switching
+        function switchTab(index) {
+            const tabs = document.querySelectorAll('.tab');
+            const contents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach((tab, i) => {
+                tab.classList.toggle('active', i === index);
+            });
+            
+            contents.forEach((content, i) => {
+                content.classList.toggle('active', i === index);
+            });
+        }
+    </script>
+</body>
+</html>

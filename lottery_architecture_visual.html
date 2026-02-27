@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lotería Blockchain - Arquitectura Visual</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #718096;
+            margin-bottom: 40px;
+            font-size: 1.2em;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            background: #f7fafc;
+            border: none;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            color: #4a5568;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .tab:hover:not(.active) {
+            background: #e2e8f0;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .architecture-diagram {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+        
+        .layer {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .layer h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .component {
+            background: #edf2f7;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border-left: 3px solid #4299e1;
+        }
+        
+        .component h4 {
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+        
+        .component ul {
+            margin-left: 20px;
+            color: #4a5568;
+        }
+        
+        .flow-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .flow-step {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .flow-step:hover {
+            transform: translateX(10px);
+        }
+        
+        .flow-number {
+            min-width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .flow-content {
+            flex: 1;
+        }
+        
+        .flow-content h4 {
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+        
+        .flow-content p {
+            color: #718096;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .comparison-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .comparison-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .comparison-table tr:hover {
+            background: #f7fafc;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .badge-success {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        
+        .badge-warning {
+            background: #feebc8;
+            color: #744210;
+        }
+        
+        .badge-danger {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+        
+        .badge-info {
+            background: #bee3f8;
+            color: #2c5282;
+        }
+        
+        .recommendation-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin: 30px 0;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+        
+        .recommendation-box h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        
+        .recommendation-box p {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        
+        .tech-stack {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .tech-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-top: 4px solid #667eea;
+        }
+        
+        .tech-card h4 {
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+        
+        .tech-card ul {
+            list-style: none;
+            color: #4a5568;
+        }
+        
+        .tech-card li:before {
+            content: "✓ ";
+            color: #48bb78;
+            font-weight: bold;
+        }
+        
+        .icon {
+            font-size: 24px;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎰 Lotería Blockchain Descentralizada</h1>
+        <p class="subtitle">Arquitectura Multi-Chain | Estilo Melate Global</p>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab(0)">📊 Comparativa Blockchains</button>
+            <button class="tab" onclick="switchTab(1)">🏗️ Arquitectura Sistema</button>
+            <button class="tab" onclick="switchTab(2)">🔄 Flujo de Usuario</button>
+            <button class="tab" onclick="switchTab(3)">💻 Stack Tecnológico</button>
+        </div>
+        
+        <!-- TAB 1: Comparativa -->
+        <div class="tab-content active">
+            <h2 style="margin-bottom: 20px; color: #2d3748;">Análisis de Blockchains</h2>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Blockchain</th>
+                        <th>Gas Fee</th>
+                        <th>TPS</th>
+                        <th>Chainlink VRF</th>
+                        <th>Adopción</th>
+                        <th>Recomendación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Polygon PoS</strong></td>
+                        <td>$0.01 - $0.10</td>
+                        <td>7,000</td>
+                        <td><span class="badge badge-success">✓ Nativo</span></td>
+                        <td><span class="badge badge-success">Alta</span></td>
+                        <td><span class="badge badge-success">⭐ RECOMENDADO</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Arbitrum</strong></td>
+                        <td>$0.10 - $1.00</td>
+                        <td>4,000</td>
+                        <td><span class="badge badge-success">✓ Disponible</span></td>
+                        <td><span class="badge badge-success">Alta</span></td>
+                        <td><span class="badge badge-info">Opción #2</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Base</strong></td>
+                        <td>$0.05 - $0.50</td>
+                        <td>2,000</td>
+                        <td><span class="badge badge-success">✓ Disponible</span></td>
+                        <td><span class="badge badge-warning">Media</span></td>
+                        <td><span class="badge badge-info">Expansión Fase 2</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Ethereum</strong></td>
+                        <td>$5.00 - $50.00</td>
+                        <td>30</td>
+                        <td><span class="badge badge-success">✓ Nativo</span></td>
+                        <td><span class="badge badge-success">Máxima</span></td>
+                        <td><span class="badge badge-danger">✗ No viable</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>BSC</strong></td>
+                        <td>$0.20 - $0.50</td>
+                        <td>2,000</td>
+                        <td><span class="badge badge-success">✓ Disponible</span></td>
+                        <td><span class="badge badge-warning">Media</span></td>
+                        <td><span class="badge badge-warning">Regional</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Solana</strong></td>
+                        <td>$0.0001</td>
+                        <td>65,000</td>
+                        <td><span class="badge badge-danger">✗ No Chainlink</span></td>
+                        <td><span class="badge badge-warning">Media</span></td>
+                        <td><span class="badge badge-danger">✗ No MVP</span></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="recommendation-box">
+                <h3>🎯 Recomendación Final: POLYGON PoS</h3>
+                <p><strong>Fase 1 (MVP):</strong> Iniciar exclusivamente en Polygon PoS por su balance óptimo de costos ultra-bajos ($0.02/tx), seguridad comprobada, y soporte completo de Chainlink VRF.</p>
+                <p style="margin-top: 10px;"><strong>Fase 2 (Expansión):</strong> Agregar Arbitrum y Base para capturar diferentes segmentos de usuarios manteniendo arquitectura simple (sin bridges).</p>
+            </div>
+        </div>
+        
+        <!-- TAB 2: Arquitectura -->
+        <div class="tab-content">
+            <h2 style="margin-bottom: 20px; color: #2d3748;">Arquitectura del Sistema</h2>
+            
+            <div class="architecture-diagram">
+                <div class="layer">
+                    <h3><span class="icon">👥</span>Capa de Usuario (Frontend)</h3>
+                    <div class="component">
+                        <h4>Interfaz Web (dApp)</h4>
+                        <ul>
+                            <li>Next.js 14 + TypeScript</li>
+                            <li>Conexión de Wallet (RainbowKit)</li>
+                            <li>Compra de boletos</li>
+                            <li>Verificación de premios</li>
+                            <li>Historial de sorteos</li>
+                        </ul>
+                    </div>
+                    <div class="component">
+                        <h4>Mobile App (Opcional Fase 2)</h4>
+                        <ul>
+                            <li>React Native + WalletConnect</li>
+                            <li>Notificaciones push para sorteos</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="layer">
+                    <h3><span class="icon">🔗</span>Capa Blockchain (Polygon PoS)</h3>
+                    <div class="component">
+                        <h4>Smart Contracts Core</h4>
+                        <ul>
+                            <li><strong>LotteryCore.sol</strong> - Lógica principal del juego</li>
+                            <li><strong>TicketNFT.sol</strong> - Boletos como NFTs ERC-721</li>
+                            <li><strong>PrizePool.sol</strong> - Gestión de fondos y distribución</li>
+                            <li><strong>DrawManager.sol</strong> - Coordinación de sorteos</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="layer">
+                    <h3><span class="icon">🎲</span>Capa de Oráculos</h3>
+                    <div class="component">
+                        <h4>Chainlink VRF v2</h4>
+                        <ul>
+                            <li>Generación verificable de números aleatorios</li>
+                            <li>Inmune a manipulación de mineros/validadores</li>
+                            <li>Proof on-chain de aleatoriedad</li>
+                        </ul>
+                    </div>
+                    <div class="component">
+                        <h4>Chainlink Automation (Keepers)</h4>
+                        <ul>
+                            <li>Trigger automático de sorteos cada 3 días</li>
+                            <li>Distribución automatizada de premios</li>
+                            <li>Mantenimiento del sistema</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="layer">
+                    <h3><span class="icon">📊</span>Capa de Datos</h3>
+                    <div class="component">
+                        <h4>The Graph Protocol</h4>
+                        <ul>
+                            <li>Indexación de eventos blockchain</li>
+                            <li>Consultas GraphQL rápidas</li>
+                            <li>Historial completo de sorteos</li>
+                        </ul>
+                    </div>
+                    <div class="component">
+                        <h4>IPFS (Pinata)</h4>
+                        <ul>
+                            <li>Metadata de boletos</li>
+                            <li>Imágenes de NFTs</li>
+                            <li>Respaldos descentralizados</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- TAB 3: Flujo de Usuario -->
+        <div class="tab-content">
+            <h2 style="margin-bottom: 20px; color: #2d3748;">Flujo Completo del Usuario</h2>
+            
+            <div class="flow-diagram">
+                <div class="flow-step">
+                    <div class="flow-number">1</div>
+                    <div class="flow-content">
+                        <h4>Conectar Wallet</h4>
+                        <p>Usuario conecta su wallet (MetaMask, WalletConnect, Coinbase Wallet) a la dApp en Polygon</p>
+                    </div>
+                </div>
+                
+                <div class="flow-step">
+                    <div class="flow-number">2</div>
+                    <div class="flow-content">
+                        <h4>Seleccionar Números</h4>
+                        <p>Elige 6 números entre 1-56 (manual o modo "rápido" con selección aleatoria)</p>
+                    </div>
+                </div>
+                
+                <div class="flow-step">
+                    <div class="flow-number">3</div>
+                    <div class="flow-content">
+                        <h4>Comprar Boleto</h4>
+                        <p>Paga 0.01 MATIC (~$0.02) + precio del boleto. Recibe NFT único del boleto</p>
+                    </div>
+                </div>
+                
+                <div class="flow-step">
+                    <div class="flow-number">4</div>
+                    <div class="flow-content">
+                        <h4>Esperar Sorteo</h4>
+                        <p>Los sorteos ocurren automáticamente cada 3 días vía Chainlink Automation</p>
+                    </div>
+                </div>
+                
+                <div class="flow-step">
+                    <div class="flow-number">5</div>
+                    <div class="flow-content">
+                        <h4>Generación de Números Ganadores</h4>
+                        <p>Chainlink VRF genera 6 números aleatorios verificables on-chain</p>
+                    </div>
+                </div>
+                
+                <div class="flow-step">
+                    <div class="flow-number">6</div>
+                    <div class="flow-content">
+                        <h4>Verificación Automática</h4>
+                        <p>Smart contract verifica todos los boletos y determina ganadores por categoría</p>
+                    </div>
+                </div>
+                
+                <div class="flow-step">
+                    <div class="flow-number">7</div>
+                    <div class="flow-content">
+                        <h4>Reclamar Premio</h4>
+                        <p>Ganadores reclaman premios con un clic. Transferencia instantánea a su wallet</p>
+                    </div>
+                </div>
+                
+                <div class="flow-step">
+                    <div class="flow-number">8</div>
+                    <div class="flow-content">
+                        <h4>Nuevo Ciclo</h4>
+                        <p>Pool acumulado (jackpot) crece si nadie ganó el premio mayor</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="recommendation-box">
+                <h3>💡 Innovaciones vs. Melate Tradicional</h3>
+                <p>✅ <strong>Transparencia Total:</strong> Todos los sorteos verificables on-chain</p>
+                <p>✅ <strong>Sin Intermediarios:</strong> Smart contracts automáticos, sin operador central</p>
+                <p>✅ <strong>Global:</strong> Cualquier persona en el mundo puede participar</p>
+                <p>✅ <strong>Custodia Propia:</strong> Fondos y premios en tu wallet, no en manos de terceros</p>
+                <p>✅ <strong>Instantáneo:</strong> Cobro de premios en segundos, no días/semanas</p>
+            </div>
+        </div>
+        
+        <!-- TAB 4: Stack Tecnológico -->
+        <div class="tab-content">
+            <h2 style="margin-bottom: 20px; color: #2d3748;">Stack Tecnológico Completo</h2>
+            
+            <div class="tech-stack">
+                <div class="tech-card">
+                    <h4>🔗 Blockchain</h4>
+                    <ul>
+                        <li>Polygon PoS Mainnet</li>
+                        <li>Polygon Mumbai (testnet)</li>
+                        <li>EVM Compatible</li>
+                    </ul>
+                </div>
+                
+                <div class="tech-card">
+                    <h4>📜 Smart Contracts</h4>
+                    <ul>
+                        <li>Solidity 0.8.20+</li>
+                        <li>Hardhat / Foundry</li>
+                        <li>OpenZeppelin Contracts</li>
+                        <li>Upgradeable Proxies</li>
+                    </ul>
+                </div>
+                
+                <div class="tech-card">
+                    <h4>🎲 Oráculos</h4>
+                    <ul>
+                        <li>Chainlink VRF v2</li>
+                        <li>Chainlink Automation</li>
+                        <li>Chainlink Price Feeds</li>
+                    </ul>
+                </div>
+                
+                <div class="tech-card">
+                    <h4>⚛️ Frontend</h4>
+                    <ul>
+                        <li>Next.js 14 + TypeScript</li>
+                        <li>Viem + Wagmi v2</li>
+                        <li>RainbowKit</li>
+                        <li>TailwindCSS</li>
+                    </ul>
+                </div>
+                
+                <div class="tech-card">
+                    <h4>📊 Indexación</h4>
+                    <ul>
+                        <li>The Graph Protocol</li>
+                        <li>Custom Subgraphs</li>
+                        <li>GraphQL API</li>
+                    </ul>
+                </div>
+                
+                <div class="tech-card">
+                    <h4>💾 Almacenamiento</h4>
+                    <ul>
+                        <li>IPFS (Pinata)</li>
+                        <li>Arweave (opcional)</li>
+                        <li>PostgreSQL (cache)</li>
+                    </ul>
+                </div>
+                
+                <div class="tech-card">
+                    <h4>🔐 Seguridad</h4>
+                    <ul>
+                        <li>OpenZeppelin Defender</li>
+                        <li>Tenderly Monitoring</li>
+                        <li>CertiK Audit</li>
+                    </ul>
+                </div>
+                
+                <div class="tech-card">
+                    <h4>🚀 Infrastructure</h4>
+                    <ul>
+                        <li>Alchemy / Infura RPC</li>
+                        <li>Vercel (frontend)</li>
+                        <li>Railway (backend)</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div style="margin-top: 40px; padding: 30px; background: #f7fafc; border-radius: 12px;">
+                <h3 style="color: #2d3748; margin-bottom: 20px;">📋 Timeline de Desarrollo</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                    <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #48bb78;">
+                        <h4 style="color: #2d3748; margin-bottom: 10px;">Mes 1-2: Fundación</h4>
+                        <p style="color: #718096;">Smart Contracts + Tests + Deploy Testnet</p>
+                    </div>
+                    <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #4299e1;">
+                        <h4 style="color: #2d3748; margin-bottom: 10px;">Mes 2-3: Frontend</h4>
+                        <p style="color: #718096;">dApp + UX/UI + Testing Público</p>
+                    </div>
+                    <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #ed8936;">
+                        <h4 style="color: #2d3748; margin-bottom: 10px;">Mes 3-4: Auditoría</h4>
+                        <p style="color: #718096;">Security Audit + Legal + Bug Bounty</p>
+                    </div>
+                    <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #9f7aea;">
+                        <h4 style="color: #2d3748; margin-bottom: 10px;">Mes 4-5: Launch</h4>
+                        <p style="color: #718096;">Mainnet Deploy + Marketing + Primer Sorteo</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function switchTab(index) {
+            const tabs = document.querySelectorAll('.tab');
+            const contents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach((tab, i) => {
+                if (i === index) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+            
+            contents.forEach((content, i) => {
+                if (i === index) {
+                    content.classList.add('active');
+                } else {
+                    content.classList.remove('active');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

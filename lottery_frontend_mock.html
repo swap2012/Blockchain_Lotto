@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlockLotto - Lotería Descentralizada</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5a67d8;
+            --secondary: #764ba2;
+            --success: #48bb78;
+            --warning: #ed8936;
+            --danger: #f56565;
+            --dark: #2d3748;
+            --gray: #718096;
+            --light-gray: #edf2f7;
+            --white: #ffffff;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        /* Navigation */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .logo-icon {
+            font-size: 32px;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+        
+        .nav-link {
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary);
+        }
+        
+        .wallet-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .wallet-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .wallet-btn.connected {
+            background: var(--success);
+        }
+        
+        /* Main Container */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 30px;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+        
+        .jackpot-display {
+            text-align: center;
+            padding: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .jackpot-display::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 3s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        
+        .jackpot-label {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        
+        .jackpot-amount {
+            color: white;
+            font-size: 64px;
+            font-weight: 900;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+        
+        .jackpot-usd {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 20px;
+            margin-top: 8px;
+            position: relative;
+        }
+        
+        /* Number Selection */
+        .selection-area {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .numbers-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .number-ball {
+            aspect-ratio: 1;
+            border-radius: 50%;
+            background: var(--light-gray);
+            border: 3px solid transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--gray);
+            cursor: pointer;
+            transition: all 0.3s;
+            user-select: none;
+        }
+        
+        .number-ball:hover {
+            background: #e2e8f0;
+            transform: scale(1.1);
+        }
+        
+        .number-ball.selected {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-color: white;
+            transform: scale(1.15);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        /* Selected Numbers Display */
+        .selected-numbers {
+            background: var(--light-gray);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .selected-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray);
+            margin-bottom: 12px;
+        }
+        
+        .selected-balls {
+            display: flex;
+            gap: 12px;
+            min-height: 60px;
+            align-items: center;
+        }
+        
+        .selected-ball {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 800;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            animation: bounceIn 0.4s;
+        }
+        
+        @keyframes bounceIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        .empty-slot {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 3px dashed var(--gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            font-size: 14px;
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            padding: 16px 24px;
+            border-radius: 12px;
+            border: none;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-secondary {
+            background: var(--light-gray);
+            color: var(--dark);
+        }
+        
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            grid-column: 1 / -1;
+            font-size: 18px;
+            padding: 20px;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Ticket Price */
+        .ticket-price {
+            background: #fff9e6;
+            border: 2px solid #ffd700;
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .price-label {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .price-amount {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffa500, #ff6347);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .info-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        }
+        
+        .info-card h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* Draw Info */
+        .draw-info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .draw-info-item:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            color: var(--gray);
+            font-size: 14px;
+        }
+        
+        .info-value {
+            font-weight: 700;
+            color: var(--dark);
+        }
+        
+        .countdown {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        /* Prize Distribution */
+        .prize-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: var(--light-gray);
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .prize-tier {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .prize-amount {
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        /* Recent Winners */
+        .winner-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--light-gray);
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .winner-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+        }
+        
+        .winner-info {
+            flex: 1;
+        }
+        
+        .winner-address {
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 14px;
+        }
+        
+        .winner-prize {
+            color: var(--success);
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        /* My Tickets Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            padding: 20px;
+        }
+        
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--gray);
+        }
+        
+        .ticket-card {
+            background: var(--light-gray);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .ticket-id {
+            font-weight: 700;
+            color: var(--dark);
+        }
+        
+        .ticket-status {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        
+        .ticket-status.pending {
+            background: #feebc8;
+            color: #744210;
+        }
+        
+        .ticket-status.won {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        
+        .ticket-numbers {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        
+        .ticket-ball {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+        
+        /* Responsive */
+        @media (max-width: 968px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .numbers-grid {
+                grid-template-columns: repeat(7, 1fr);
+            }
+            
+            .nav-links {
+                display: none;
+            }
+        }
+        
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Success Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--success);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            display: none;
+            align-items: center;
+            gap: 12px;
+            z-index: 2000;
+            animation: slideIn 0.3s;
+        }
+        
+        .toast.active {
+            display: flex;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="logo">
+            <span class="logo-icon">🎰</span>
+            <span>BlockLotto</span>
+        </div>
+        <div class="nav-links">
+            <a href="#" class="nav-link">Inicio</a>
+            <a href="#" class="nav-link" onclick="openMyTickets()">Mis Boletos</a>
+            <a href="#" class="nav-link">Historial</a>
+            <a href="#" class="nav-link">Cómo Jugar</a>
+        </div>
+        <button class="wallet-btn" id="walletBtn" onclick="connectWallet()">
+            <span>🔗</span>
+            <span id="walletText">Conectar Wallet</span>
+        </button>
+    </nav>
+    
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Hero Section -->
+        <div class="hero">
+            <!-- Jackpot Display -->
+            <div class="jackpot-display">
+                <div class="jackpot-label">🏆 JACKPOT ACUMULADO</div>
+                <div class="jackpot-amount">$245,750</div>
+                <div class="jackpot-usd">≈ 122,875 MATIC</div>
+            </div>
+            
+            <!-- Number Selection -->
+            <div class="selection-area">
+                <div class="section-title">
+                    <span>🎯</span>
+                    Selecciona 6 Números (1-56)
+                </div>
+                
+                <div class="numbers-grid" id="numbersGrid">
+                    <!-- Numbers will be generated by JS -->
+                </div>
+                
+                <!-- Selected Numbers Display -->
+                <div class="selected-numbers">
+                    <div class="selected-label">Números Seleccionados: <span id="selectedCount">0</span>/6</div>
+                    <div class="selected-balls" id="selectedBalls">
+                        <div class="empty-slot">1</div>
+                        <div class="empty-slot">2</div>
+                        <div class="empty-slot">3</div>
+                        <div class="empty-slot">4</div>
+                        <div class="empty-slot">5</div>
+                        <div class="empty-slot">6</div>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="clearSelection()">
+                        <span>🔄</span> Limpiar
+                    </button>
+                    <button class="btn btn-secondary" onclick="quickPick()">
+                        <span>⚡</span> Selección Rápida
+                    </button>
+                    <button class="btn btn-primary" id="buyBtn" onclick="buyTicket()" disabled>
+                        <span id="buyBtnText">🎫 Comprar Boleto</span>
+                    </button>
+                </div>
+                
+                <!-- Ticket Price -->
+                <div class="ticket-price">
+                    <span class="price-label">💰 Precio del Boleto:</span>
+                    <span class="price-amount">$2.00 USD</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <!-- Draw Info -->
+            <div class="info-card">
+                <h3>⏰ Próximo Sorteo</h3>
+                <div class="draw-info-item">
+                    <span class="info-label">Tiempo restante:</span>
+                    <span class="countdown" id="countdown">47:32:15</span>
+                </div>
+                <div class="draw-info-item">
+                    <span class="info-label">Sorteo #:</span>
+                    <span class="info-value">1,248</span>
+                </div>
+                <div class="draw-info-item">
+                    <span class="info-label">Boletos vendidos:</span>
+                    <span class="info-value">12,453</span>
+                </div>
+                <div class="draw-info-item">
+                    <span class="info-label">Pool actual:</span>
+                    <span class="info-value">$24,906</span>
+                </div>
+            </div>
+            
+            <!-- Prize Distribution -->
+            <div class="info-card">
+                <h3>💎 Distribución de Premios</h3>
+                <div class="prize-item">
+                    <span class="prize-tier">🥇 6 Aciertos</span>
+                    <span class="prize-amount">50%</span>
+                </div>
+                <div class="prize-item">
+                    <span class="prize-tier">🥈 5 Aciertos</span>
+                    <span class="prize-amount">20%</span>
+                </div>
+                <div class="prize-item">
+                    <span class="prize-tier">🥉 4 Aciertos</span>
+                    <span class="prize-amount">15%</span>
+                </div>
+                <div class="prize-item">
+                    <span class="prize-tier">🎖️ 3 Aciertos</span>
+                    <span class="prize-amount">10%</span>
+                </div>
+            </div>
+            
+            <!-- Recent Winners -->
+            <div class="info-card">
+                <h3>🎉 Ganadores Recientes</h3>
+                <div class="winner-item">
+                    <div class="winner-avatar">0x4F</div>
+                    <div class="winner-info">
+                        <div class="winner-address">0x4F2a...8d3c</div>
+                        <div class="winner-prize">🏆 Ganó $12,453</div>
+                    </div>
+                </div>
+                <div class="winner-item">
+                    <div class="winner-avatar">0xA1</div>
+                    <div class="winner-info">
+                        <div class="winner-address">0xA1b3...9f2e</div>
+                        <div class="winner-prize">🥈 Ganó $2,490</div>
+                    </div>
+                </div>
+                <div class="winner-item">
+                    <div class="winner-avatar">0x8C</div>
+                    <div class="winner-info">
+                        <div class="winner-address">0x8C7d...4a1b</div>
+                        <div class="winner-prize">🥉 Ganó $1,867</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- My Tickets Modal -->
+    <div class="modal" id="myTicketsModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeMyTickets()">✕</button>
+            <h2 style="margin-bottom: 24px; color: var(--dark);">🎫 Mis Boletos</h2>
+            
+            <div class="ticket-card">
+                <div class="ticket-header">
+                    <span class="ticket-id">Boleto #1248-0042</span>
+                    <span class="ticket-status pending">⏳ Pendiente</span>
+                </div>
+                <div style="color: var(--gray); font-size: 14px; margin-bottom: 8px;">Sorteo #1,248</div>
+                <div class="ticket-numbers">
+                    <div class="ticket-ball">07</div>
+                    <div class="ticket-ball">14</div>
+                    <div class="ticket-ball">23</div>
+                    <div class="ticket-ball">31</div>
+                    <div class="ticket-ball">42</div>
+                    <div class="ticket-ball">55</div>
+                </div>
+            </div>
+            
+            <div class="ticket-card">
+                <div class="ticket-header">
+                    <span class="ticket-id">Boleto #1247-0156</span>
+                    <span class="ticket-status won">🎉 Ganador - 4 Aciertos</span>
+                </div>
+                <div style="color: var(--gray); font-size: 14px; margin-bottom: 8px;">Sorteo #1,247</div>
+                <div class="ticket-numbers">
+                    <div class="ticket-ball">03</div>
+                    <div class="ticket-ball">12</div>
+                    <div class="ticket-ball">28</div>
+                    <div class="ticket-ball">35</div>
+                    <div class="ticket-ball">41</div>
+                    <div class="ticket-ball">50</div>
+                </div>
+                <button class="btn btn-primary" style="margin-top: 12px;">
+                    💰 Reclamar Premio ($1,867)
+                </button>
+            </div>
+            
+            <div class="ticket-card">
+                <div class="ticket-header">
+                    <span class="ticket-id">Boleto #1246-0089</span>
+                    <span class="ticket-status pending">❌ No ganador</span>
+                </div>
+                <div style="color: var(--gray); font-size: 14px; margin-bottom: 8px;">Sorteo #1,246</div>
+                <div class="ticket-numbers">
+                    <div class="ticket-ball">05</div>
+                    <div class="ticket-ball">16</div>
+                    <div class="ticket-ball">22</div>
+                    <div class="ticket-ball">33</div>
+                    <div class="ticket-ball">44</div>
+                    <div class="ticket-ball">52</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Success Toast -->
+    <div class="toast" id="toast">
+        <span>✓</span>
+        <span id="toastMessage">¡Boleto comprado exitosamente!</span>
+    </div>
+    
+    <script>
+        // State
+        let selectedNumbers = [];
+        let isWalletConnected = false;
+        
+        // Generate number grid
+        function generateNumbers() {
+            const grid = document.getElementById('numbersGrid');
+            for (let i = 1; i <= 56; i++) {
+                const ball = document.createElement('div');
+                ball.className = 'number-ball';
+                ball.textContent = i.toString().padStart(2, '0');
+                ball.onclick = () => toggleNumber(i);
+                grid.appendChild(ball);
+            }
+        }
+        
+        // Toggle number selection
+        function toggleNumber(num) {
+            if (!isWalletConnected) {
+                showToast('❌ Conecta tu wallet primero');
+                return;
+            }
+            
+            const index = selectedNumbers.indexOf(num);
+            const balls = document.querySelectorAll('.number-ball');
+            
+            if (index > -1) {
+                selectedNumbers.splice(index, 1);
+                balls[num - 1].classList.remove('selected');
+            } else {
+                if (selectedNumbers.length < 6) {
+                    selectedNumbers.push(num);
+                    balls[num - 1].classList.add('selected');
+                } else {
+                    showToast('⚠️ Ya seleccionaste 6 números');
+                }
+            }
+            
+            selectedNumbers.sort((a, b) => a - b);
+            updateSelectedDisplay();
+        }
+        
+        // Update selected numbers display
+        function updateSelectedDisplay() {
+            const container = document.getElementById('selectedBalls');
+            const count = document.getElementById('selectedCount');
+            const buyBtn = document.getElementById('buyBtn');
+            
+            count.textContent = selectedNumbers.length;
+            container.innerHTML = '';
+            
+            for (let i = 0; i < 6; i++) {
+                if (selectedNumbers[i]) {
+                    const ball = document.createElement('div');
+                    ball.className = 'selected-ball';
+                    ball.textContent = selectedNumbers[i].toString().padStart(2, '0');
+                    container.appendChild(ball);
+                } else {
+                    const slot = document.createElement('div');
+                    slot.className = 'empty-slot';
+                    slot.textContent = i + 1;
+                    container.appendChild(slot);
+                }
+            }
+            
+            buyBtn.disabled = selectedNumbers.length !== 6;
+        }
+        
+        // Clear selection
+        function clearSelection() {
+            selectedNumbers = [];
+            document.querySelectorAll('.number-ball').forEach(ball => {
+                ball.classList.remove('selected');
+            });
+            updateSelectedDisplay();
+        }
+        
+        // Quick pick
+        function quickPick() {
+            if (!isWalletConnected) {
+                showToast('❌ Conecta tu wallet primero');
+                return;
+            }
+            
+            clearSelection();
+            const numbers = [];
+            while (numbers.length < 6) {
+                const num = Math.floor(Math.random() * 56) + 1;
+                if (!numbers.includes(num)) {
+                    numbers.push(num);
+                }
+            }
+            
+            numbers.sort((a, b) => a - b);
+            numbers.forEach(num => toggleNumber(num));
+        }
+        
+        // Connect wallet
+        async function connectWallet() {
+            const btn = document.getElementById('walletBtn');
+            const text = document.getElementById('walletText');
+            
+            if (isWalletConnected) {
+                isWalletConnected = false;
+                btn.classList.remove('connected');
+                text.textContent = 'Conectar Wallet';
+                clearSelection();
+                showToast('👋 Wallet desconectado');
+                return;
+            }
+            
+            // Simulate wallet connection
+            text.innerHTML = '<span class="loading"></span>';
+            
+            setTimeout(() => {
+                isWalletConnected = true;
+                btn.classList.add('connected');
+                text.textContent = '0x4F2a...8d3c';
+                showToast('✓ Wallet conectado exitosamente');
+            }, 1500);
+        }
+        
+        // Buy ticket
+        async function buyTicket() {
+            const btnText = document.getElementById('buyBtnText');
+            const originalText = btnText.innerHTML;
+            
+            btnText.innerHTML = '<span class="loading"></span> Comprando...';
+            
+            // Simulate transaction
+            setTimeout(() => {
+                btnText.innerHTML = originalText;
+                showToast('✓ ¡Boleto comprado! Suerte en el sorteo 🍀');
+                clearSelection();
+            }, 2000);
+        }
+        
+        // Show toast
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const msg = document.getElementById('toastMessage');
+            msg.textContent = message;
+            toast.classList.add('active');
+            
+            setTimeout(() => {
+                toast.classList.remove('active');
+            }, 3000);
+        }
+        
+        // My Tickets Modal
+        function openMyTickets() {
+            if (!isWalletConnected) {
+                showToast('❌ Conecta tu wallet primero');
+                return;
+            }
+            document.getElementById('myTicketsModal').classList.add('active');
+        }
+        
+        function closeMyTickets() {
+            document.getElementById('myTicketsModal').classList.remove('active');
+        }
+        
+        // Countdown timer
+        function updateCountdown() {
+            const countdownEl = document.getElementById('countdown');
+            let hours = 47;
+            let minutes = 32;
+            let seconds = 15;
+            
+            setInterval(() => {
+                seconds--;
+                if (seconds < 0) {
+                    seconds = 59;
+                    minutes--;
+                    if (minutes < 0) {
+                        minutes = 59;
+                        hours--;
+                    }
+                }
+                
+                countdownEl.textContent = 
+                    `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+        
+        // Initialize
+        generateNumbers();
+        updateCountdown();
+    </script>
+</body>
+</html>
